@@ -1,61 +1,183 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 🧺 Sistem Pencatatan Laundry
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Aplikasi web untuk manajemen dan pencatatan laundry berbasis Laravel 12 dengan Tailwind CSS.
 
-## About Laravel
+## ✨ Fitur Utama
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- 📋 **Manajemen Pesanan** - Buat pesanan dengan multiple items, tracking status
+- 👥 **Manajemen Pelanggan** - CRUD pelanggan dengan pencarian
+- 🧼 **Layanan Laundry** - Kelola jenis layanan dan harga per kg
+- 💰 **Pembayaran Bertahap** - Support DP dan pelunasan
+- 📄 **Print Nota** - Cetak nota pesanan untuk pelanggan
+- 📊 **Dashboard** - Statistik real-time dan pesanan terbaru
+- 💼 **Manajemen Staff** - Kelola data karyawan (Admin only)
+- 👤 **User Management** - Kelola akun pengguna dengan role (Admin only)
+- 🔐 **Role Management** - Admin dan Staff dengan akses berbeda
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## 🛠️ Teknologi
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- **Backend**: Laravel 12
+- **Frontend**: Tailwind CSS 4, Vite
+- **Database**: MySQL
+- **PHP**: 8.2+
 
-## Learning Laravel
+## 🚀 Quick Start
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### Cara Cepat (Windows)
+```bash
+# 1. Install dependencies
+composer install
+npm install
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+# 2. Setup database (otomatis)
+setup-database.bat
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+# 3. Jalankan aplikasi
+php artisan serve
+# Di terminal lain:
+npm run dev
+```
 
-## Laravel Sponsors
+### Manual Setup
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+1. **Clone & Install**
+```bash
+git clone <repository-url>
+cd PencatatanLaundry
+composer install
+npm install
+```
 
-### Premium Partners
+2. **Setup Environment**
+```bash
+copy .env.example .env
+php artisan key:generate
+```
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+3. **Buat Database**
 
-## Contributing
+**Opsi 1 - MySQL Command Line:**
+```bash
+mysql -u root -p < scripts/create-database.sql
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+**Opsi 2 - phpMyAdmin:**
+- Buka phpMyAdmin
+- Klik tab "SQL"
+- Copy isi file `scripts/create-database.sql`
+- Klik "Go"
 
-## Code of Conduct
+**Opsi 3 - Manual:**
+```sql
+CREATE DATABASE laundry CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+4. **Konfigurasi Database**
+Edit file `.env`:
+```env
+DB_DATABASE=laundry
+DB_USERNAME=root
+DB_PASSWORD=
+```
 
-## Security Vulnerabilities
+5. **Migrate & Seed**
+```bash
+php artisan migrate
+php artisan db:seed
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+6. **Jalankan Aplikasi**
+```bash
+# Terminal 1
+php artisan serve
 
-## License
+# Terminal 2
+npm run dev
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Buka: `http://localhost:8000`
+
+## 🔑 Login Default
+
+- **Admin**
+  - Username: `admin`
+  - Password: `password`
+  - Akses: Semua fitur termasuk Staff & User Management
+
+- **Staff**
+  - Username: `staff`
+  - Password: `password`
+  - Akses: Dashboard, Pelanggan, Layanan, Pesanan
+
+## 📖 Dokumentasi
+
+Dokumentasi lengkap tersedia di folder `docs/`:
+- [README.md](docs/README.md) - Panduan lengkap
+- [STRUKTUR_LAUNDRY.md](docs/STRUKTUR_LAUNDRY.md) - Database schema & models
+- [CHANGELOG.md](docs/CHANGELOG.md) - Riwayat perubahan
+- [PERBANDINGAN.md](docs/PERBANDINGAN.md) - Perbandingan konsep
+
+## 📁 Struktur Proyek
+
+```
+PencatatanLaundry/
+├── app/
+│   ├── Http/Controllers/      # Controllers
+│   ├── Models/                # Eloquent Models
+│   └── Http/Middleware/       # Custom Middleware
+├── database/
+│   ├── migrations/            # Database migrations
+│   └── seeders/               # Database seeders
+├── resources/
+│   ├── views/
+│   │   ├── layouts/          # Layout templates
+│   │   └── pages/            # Page views
+│   ├── css/                  # Tailwind CSS
+│   └── js/                   # JavaScript
+├── routes/
+│   └── web.php               # Web routes
+└── docs/                     # Dokumentasi
+```
+
+## 🎯 Workflow Pesanan
+
+1. **Pending** - Pesanan baru masuk
+2. **Processing** - Sedang dikerjakan
+3. **Ready** - Selesai, siap diambil
+4. **Completed** - Sudah diambil pelanggan
+5. **Cancelled** - Dibatalkan
+
+## 💡 Tips
+
+- Gunakan fitur pencarian di halaman Pelanggan dan Pesanan
+- Filter pesanan berdasarkan status untuk mempermudah tracking
+- Print nota untuk diberikan ke pelanggan
+- Pembayaran bisa dilakukan bertahap (DP dulu, pelunasan kemudian)
+
+## 🐛 Troubleshooting
+
+**Error: Unknown database 'laundry'**
+```bash
+# Buat database dulu
+mysql -u root -p
+CREATE DATABASE laundry;
+```
+
+**Error: No application encryption key**
+```bash
+php artisan key:generate
+```
+
+**Assets tidak muncul**
+```bash
+# Pastikan npm run dev berjalan
+npm run dev
+```
+
+## 📝 License
+
+MIT License
+
+## 👨‍💻 Developer
+
+Sistem ini dikembangkan menggunakan Laravel 12 dan Tailwind CSS 4.

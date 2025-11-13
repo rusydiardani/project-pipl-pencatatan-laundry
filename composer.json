@@ -1,11 +1,12 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "laravel/laravel",
+    "name": "laundry/management-system",
     "type": "project",
-    "description": "The skeleton application for the Laravel framework.",
+    "description": "Sistem Pencatatan dan Manajemen Laundry",
     "keywords": [
-        "laravel",
-        "framework"
+        "laundry",
+        "management",
+        "laravel"
     ],
     "license": "MIT",
     "require": {

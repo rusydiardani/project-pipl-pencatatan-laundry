@@ -6,16 +6,19 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration {
     public function up(): void {
-        Schema::create('staffs', function (Blueprint $table) {
-            $table->string('nik', 20)->primary();
+        Schema::create('staff', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('user_id')->nullable()->constrained()->onDelete('cascade');
             $table->string('name');
-            $table->enum('sex', ['M', 'F'])->nullable();
-            $table->string('location')->nullable();
+            $table->string('phone')->unique();
+            $table->text('address')->nullable();
+            $table->string('position')->nullable(); // Posisi: Manager, Operator, dll
+            $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
     }
 
     public function down(): void {
-        Schema::dropIfExists('staffs');
+        Schema::dropIfExists('staff');
     }
 };

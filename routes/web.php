@@ -2,13 +2,12 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\MedController;
-use App\Http\Controllers\ServiceController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\LaundryItemController;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\StaffController;
-use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\UserController;
-use App\Http\Controllers\ProductController;
-use App\Models\Transaction;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,14 +16,10 @@ use App\Models\Transaction;
 */
 
 // Halaman login (hanya untuk guest)
-Route::view('/', 'pages.login')->name('login')->middleware('guest');
+Route::get('/', [AuthController::class, 'showLogin'])->middleware('guest');
 
 // Proses login
-Route::post('/login', [AuthController::class, 'login'])
-    ->name('login.process')
-    ->middleware('guest');
-
-
+Route::post('/login', [AuthController::class, 'login'])->name('login')->middleware('guest');
 
 /*
 |--------------------------------------------------------------------------
@@ -34,19 +29,10 @@ Route::post('/login', [AuthController::class, 'login'])
 Route::middleware('auth')->group(function () {
 
     /*
-    --------------------------------------------------------------------------
-    | Pencarian Produk (Obat dan Service)
-    |--------------------------------------------------------------------------
-    */   
-
-    Route::get('/products/search', [ProductController::class, 'search'])->name('products.search');
-
-    /*
     |--------------------------------------------------------------------------
     | Logout
     |--------------------------------------------------------------------------
     */
-    
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
     /*
@@ -61,47 +47,31 @@ Route::middleware('auth')->group(function () {
     | Dashboard Utama
     |--------------------------------------------------------------------------
     */
-    Route::get('/dashboard', function () {
-        $user = auth()->user();
-        return view('pages.draft', compact('user'));
-    })->name('dashboard');
-
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     /*
     |--------------------------------------------------------------------------
-    | CRUD Obat (Meds)
+    | CRUD Pelanggan (Customers)
     |--------------------------------------------------------------------------
-    |
-    | Controller: MedController
-    | Resource: index, create, store, show, edit, update, destroy
-    |
     */
-    Route::resource('med', MedController::class);
-
-
+    Route::resource('customers', CustomerController::class);
 
     /*
     |--------------------------------------------------------------------------
-    | CRUD Service
+    | CRUD Jenis Layanan Laundry (Laundry Items)
     |--------------------------------------------------------------------------
-    |
-    | Controller: ServiceController
-    |
     */
-    Route::resource('service', ServiceController::class);
-
+    Route::resource('laundry-items', LaundryItemController::class);
 
     /*
     |--------------------------------------------------------------------------
-    | CRUD Transaksi
+    | CRUD Pesanan (Orders)
     |--------------------------------------------------------------------------
-    |
-    | Controller: TransactionController
-    | Digunakan untuk gabungan antara produk (obat / service)
-    |
     */
-    Route::resource('transaction', TransactionController::class);
-    Route::post('/transactions/store', [TransactionController::class, 'store'])->name('transactions.store');
+    Route::resource('orders', OrderController::class);
+    Route::get('/orders/{order}/print', [OrderController::class, 'print'])->name('orders.print');
+    Route::post('/orders/{order}/payment', [OrderController::class, 'addPayment'])->name('orders.payment');
+    Route::patch('/orders/{order}/status', [OrderController::class, 'updateStatus'])->name('orders.status');
 
     /*
     |--------------------------------------------------------------------------
@@ -110,30 +80,15 @@ Route::middleware('auth')->group(function () {
     */
     Route::middleware('isAdmin')->group(function () {
         Route::resource('staff', StaffController::class);
-        Route::resource('user', UserController::class); // pastikan ada controller UserController
+        Route::resource('users', UserController::class);
     });
-
-
-    Route::get('/list', [\App\Http\Controllers\TransactionController::class, 'listPage'])
-  ->name('list.page');
-  Route::delete('/transactions/ref/{ref_no}', [TransactionController::class, 'destroyByRef'])
-  ->name('transactions.destroyByRef');
-  Route::get('/detail/{ref_no}', [\App\Http\Controllers\TransactionController::class, 'detailByRef'])
-->name('transactions.detail');
-
-   Route::post('/transactions/recommend', [TransactionController::class, 'recommend'])->name('transactions.recommend');
-
-
 
     /*
     |--------------------------------------------------------------------------
-    | Static Pages (Halaman Tampilan)
+    | Laporan
     |--------------------------------------------------------------------------
     */
-    Route::view('/draft', 'pages.draft')->name('draft.page');
-    Route::view('/buat', 'pages.buat')->name('buat.page');
-    // Route::view('/produk/service', 'pages.produk_service')->name('produk.service');
-    // Route::view('/produk/obat', 'pages.produk_obat')->name('produk.obat');
-
-
+    Route::get('/reports', function () {
+        return view('pages.reports');
+    })->name('reports');
 });

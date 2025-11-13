@@ -3,73 +3,71 @@
 namespace App\Http\Controllers;
 
 use App\Models\Staff;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 
 class StaffController extends Controller
 {
-    /**
-     * Tampilkan daftar semua staff (untuk view dan API)
-     */
-    public function index(Request $request)
+    public function index()
     {
-        $staffs = Staff::all();
-
-        if ($request->wantsJson()) {
-            return response()->json($staffs);
-        }
-
-        return view('pages.staff_index', compact('staffs'));
+        $staff = Staff::with('user')->latest()->paginate(20);
+        return view('pages.staff.index', compact('staff'));
     }
 
-    /**
-     * Simpan data staff baru
-     */
+    public function create()
+    {
+        $users = User::whereDoesntHave('staff')->get();
+        return view('pages.staff.create', compact('users'));
+    }
+
     public function store(Request $request)
     {
-        $data = $request->validate([
-            'nik' => 'required|string|unique:staffs,nik',
-            'name' => 'required|string',
-            'sex' => 'nullable|in:M,F',
-            'location' => 'nullable|string',
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'phone' => 'required|string|unique:staff,phone',
+            'address' => 'nullable|string',
+            'position' => 'required|string',
+            'is_active' => 'boolean',
+            'user_id' => 'nullable|exists:users,id',
         ]);
 
-        Staff::create($data);
+        Staff::create($validated);
 
-        return redirect()->route('staff.index')->with('success', 'Data staff berhasil ditambahkan!');
+        return redirect()->route('staff.index')
+            ->with('success', 'Data staff berhasil ditambahkan!');
     }
 
-    /**
-     * Tampilkan halaman edit staff
-     */
     public function edit(Staff $staff)
     {
-        return view('pages.staff_edit', compact('staff'));
+        $staff->load('user');
+        $users = User::whereDoesntHave('staff')->orWhere('id', $staff->user_id)->get();
+        return view('pages.staff.edit', compact('staff', 'users'));
     }
 
-    /**
-     * Update data staff
-     */
     public function update(Request $request, Staff $staff)
     {
-        $data = $request->validate([
-            'nik' => 'required|string|unique:staffs,nik,' . $staff->nik . ',nik',
-            'name' => 'required|string',
-            'sex' => 'nullable|in:M,F',
-            'location' => 'nullable|string',
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'phone' => 'required|string|unique:staff,phone,' . $staff->id,
+            'address' => 'nullable|string',
+            'position' => 'required|string',
+            'is_active' => 'boolean',
+            'user_id' => 'nullable|exists:users,id',
         ]);
 
-        $staff->update($data);
+        $staff->update($validated);
 
-        return redirect()->route('staff.index')->with('success', 'Data staff berhasil diperbarui!');
+        return redirect()->route('staff.index')
+            ->with('success', 'Data staff berhasil diperbarui!');
     }
 
-    /**
-     * Hapus data staff
-     */
     public function destroy(Staff $staff)
     {
         $staff->delete();
 
-        return redirect()->route('staff.index')->with('success', 'Data staff berhasil dihapus!');
+        return redirect()->route('staff.index')
+            ->with('success', 'Data staff berhasil dihapus!');
     }
 }

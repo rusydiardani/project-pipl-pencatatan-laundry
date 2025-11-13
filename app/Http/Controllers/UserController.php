@@ -15,43 +15,45 @@ class UserController extends Controller
         $this->middleware('isAdmin');
     }
 
-    // Tampilkan semua user yang role = 'user'
     public function index()
     {
-        $users = User::where('role', 'user')->get();
-        return view('pages.user_index', compact('users'));
+        $users = User::with('staff')->latest()->paginate(20);
+        return view('pages.users.index', compact('users'));
     }
 
-    // Simpan user baru, role otomatis 'user'
+    public function create()
+    {
+        return view('pages.users.create');
+    }
+
     public function store(Request $request)
     {
         $data = $request->validate([
             'name'     => 'required|string|max:255',
             'username' => 'required|string|max:255|unique:users,username',
-            'password' => 'required|string|min:1',
+            'password' => 'required|string|min:4|confirmed',
+            'role'     => 'required|in:admin,user',
         ]);
 
         $data['password'] = Hash::make($data['password']);
-        $data['role'] = 'user';
 
         User::create($data);
 
-        return redirect()->route('user.index')->with('success', 'User berhasil ditambahkan!');
+        return redirect()->route('users.index')->with('success', 'User berhasil ditambahkan!');
     }
 
-    // Edit user (hanya admin)
     public function edit(User $user)
     {
-        return view('pages.user_edit', compact('user'));
+        return view('pages.users.edit', compact('user'));
     }
 
-    // Update user, role tetap 'user'
     public function update(Request $request, User $user)
     {
         $data = $request->validate([
             'name'     => 'required|string|max:255',
             'username' => 'required|string|max:255|unique:users,username,' . $user->id,
-            'password' => 'nullable|string|min:4',
+            'password' => 'nullable|string|min:4|confirmed',
+            'role'     => 'required|in:admin,user',
         ]);
 
         if (!empty($data['password'])) {
@@ -60,18 +62,19 @@ class UserController extends Controller
             unset($data['password']);
         }
 
-        $data['role'] = 'user'; // role tetap user
-
         $user->update($data);
 
-        return redirect()->route('user.index')->with('success', 'User berhasil diperbarui!');
+        return redirect()->route('users.index')->with('success', 'User berhasil diperbarui!');
     }
 
-    // Hapus user
     public function destroy(User $user)
     {
+        if ($user->id == auth()->id()) {
+            return back()->with('error', 'Tidak bisa menghapus akun sendiri!');
+        }
+        
         $user->delete();
-        return redirect()->route('user.index')->with('success', 'User berhasil dihapus!');
+        return redirect()->route('users.index')->with('success', 'User berhasil dihapus!');
     }
 
     public function updatePassword(Request $request)

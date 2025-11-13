@@ -2,10 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
@@ -14,18 +11,9 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        User::create([
-            'name' => 'Admin Utama',
-            'username' => 'admin',
-            'password' => Hash::make('admin123'),
-            'role' => 'admin',
-        ]);
-
-        User::create([
-            'name' => 'Staff Kasir',
-            'username' => 'staff',
-            'password' => Hash::make('staff123'),
-            'role' => 'user',
+        // Call LaundrySeeder untuk data awal sistem laundry
+        $this->call([
+            LaundrySeeder::class,
         ]);
     }
 }
