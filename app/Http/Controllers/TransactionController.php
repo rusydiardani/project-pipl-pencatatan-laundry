@@ -123,10 +123,14 @@ class TransactionController extends Controller
         return response()->noContent();
     }
 
-    public function listPage()
+    public function listPage(Request $request)
 {
-    // Ringkas transaksi per ref_no
-    $rows = \App\Models\Transaction::select(
+    // berapa item per halaman (bisa lewat query ?per_page=20)
+    $perPage = (int) $request->query('per_page', 10);
+    $search  = trim($request->query('search', ''));
+
+    // Baseline query: kita ringkas per ref_no
+    $query = \App\Models\Transaction::select(
         'ref_no',
         \DB::raw('MIN(created_at) as created_at'),
         \DB::raw('MIN(created_by) as created_by'),
@@ -135,11 +139,21 @@ class TransactionController extends Controller
         \DB::raw('COUNT(*) as items_count')
     )
     ->groupBy('ref_no')
-    ->orderBy(\DB::raw('MIN(created_at)'), 'desc')
-    ->get();
+    ->orderBy(\DB::raw('MIN(created_at)'), 'desc');
 
-    return view('pages.list', compact('rows'));
+    // Jika ada search, tambahkan filter (by ref_no OR client_name)
+    if ($search !== '') {
+        $query->where(function ($q) use ($search) {
+            $q->where('ref_no', 'like', "%{$search}%")
+              ->orWhere('client_name', 'like', "%{$search}%");
+        });
+    }
+
+    $rows = $query->paginate($perPage)->appends($request->query());
+
+    return view('pages.list', compact('rows', 'search'));
 }
+
 public function destroyByRef(string $ref_no)
 {
     // Opsi: tambahkan otorisasi di sini kalau perlu (mis. Gate/Policy)
