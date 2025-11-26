@@ -64,7 +64,7 @@ function readService(block) {
   const name = qs(block, '.js-nama-service')?.value || '';
   const date = qs(block, '.js-date')?.value || '';
   const time = qs(block, '.js-time')?.value || '';
-  const dur  = qs(block, '.js-duration')?.value || '';
+  // const dur  = qs(block, '.js-duration')?.value || '';
   const price = Number(qs(block, '.js-price')?.value || 0);
 
   const valid = !!(name && date && time && dur && price > 0);

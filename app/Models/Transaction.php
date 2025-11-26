@@ -15,19 +15,19 @@ class Transaction extends Model
         'created_at_manual',
         'created_by',
         'client_name',
-        'age',
-        'occupation',
-        'sex',
-        'product_type',
+        // 'age',
+        // 'occupation',
+        // 'sex',
+        // 'product_type',
         'product_id',
         'product_name',
-        'qty',
+        'weight',
         'price',
-        'duration',
+        // 'duration',
         'scheduled_date',
         'scheduled_time',
-        'staff_nik',
-        'location',
+        // 'staff_nik',
+        // 'location',
         'status',
     ];
 
@@ -36,18 +36,18 @@ class Transaction extends Model
         'scheduled_time' => 'string', // Ubah ke string agar tidak error konversi waktu
         'status' => 'string',
         'price' => 'decimal:2',
-        'qty' => 'integer',
+        'weight' => 'decimal:2',
     ];
 
     // Relasi ke Staff
-    public function staff()
-    {
-        return $this->belongsTo(Staff::class, 'staff_nik', 'nik');
-    }
+    // public function staff()
+    // {
+    //     return $this->belongsTo(Staff::class, 'staff_nik', 'nik');
+    // }
 
     // Accessor subtotal otomatis
     public function getSubtotalAttribute()
     {
-        return $this->qty * $this->price;
+        return $this->weight * $this->price;
     }
 }

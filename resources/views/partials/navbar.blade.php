@@ -6,18 +6,18 @@
 
     {{-- Dropdown Produk --}}
     <div class="nav-dropdown">
-      <button class="nav-link dropdown-toggle" data-dd>Produk ▾</button>
+      <button class="nav-link dropdown-toggle" data-dd>Service ▾</button>
       <div class="dropdown-menu">
-        <a href="{{ route('service.index') }}" class="dropdown-item">Service</a>
-        <a href="{{ route('med.index') }}" class="dropdown-item">Obat</a>
+        <a href="{{ route('service.index') }}" class="dropdown-item">Add Service</a>
+        <!-- <a href="{{ route('med.index') }}" class="dropdown-item">Obat</a> -->
       </div>
     </div>
 
     {{-- Hanya admin yang bisa melihat --}}
-    @if(auth()->user()->role === 'admin')
+    <!-- @if(auth()->user()->role === 'admin')
       <a href="{{ route('staff.index') }}" class="nav-link">Staff Management</a>
       <a href="{{ route('user.index') }}" class="nav-link">User Management</a>
-    @endif
+    @endif -->
   </div>
 
   <div class="nav-right">

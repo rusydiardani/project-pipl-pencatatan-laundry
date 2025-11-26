@@ -27,24 +27,24 @@ return new class extends Migration
             $table->enum('product_type', ['service', 'med']);
             $table->unsignedBigInteger('product_id');
             $table->string('product_name');
-            $table->integer('qty')->default(1);
+            $table->integer('weight')->default(1);
             $table->decimal('price', 10, 2)->default(0);
-            $table->string('duration')->nullable();
+            // $table->string('duration')->nullable();
 
             // Jadwal (khusus service)
             $table->date('scheduled_date')->nullable();
             $table->time('scheduled_time')->nullable();
 
             // Staff dan lokasi
-            $table->string('staff_nik');
-            $table->string('location');
+            // $table->string('staff_nik');
+            // $table->string('location');
 
             // Status transaksi
             $table->enum('status', ['NEW', 'COMPLETED','CANCELLED'])->default('NEW');
 
             $table->timestamps();
 
-            // // Relasi foreign key
+            // Relasi foreign key
             // $table->foreign('staff_nik')
             //       ->references('nik')
             //       ->on('staffs')

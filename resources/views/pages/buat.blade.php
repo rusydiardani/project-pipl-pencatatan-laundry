@@ -25,8 +25,10 @@
               <div class="form-row">
                 <label>Ref No</label>
                 <input type="text" class="input ref_no" placeholder="TX-XXXXXX (readonly)" readonly>
-              </div>
-              <div class="form-row">
+              </div> 
+            </div>
+            <div class="grid-2">
+            <div class="form-row">
                 <label>Created By</label>
                 <input type="text" class="input created_by" value="{{ auth()->user()->username ?? 'Admin' }}" readonly>
               </div>
@@ -36,16 +38,16 @@
                 <label>Nama Client</label>
                 <input type="text" class="input client_name" placeholder="Nama client">
               </div>
-              <div class="form-row">
+              <!-- <div class="form-row">
                 <label>Jenis Kelamin</label>
                 <select class="input sex">
                   <option value="">Pilih</option>
                   <option value="M">Pria</option>
                   <option value="F">Wanita</option>
                 </select>
-              </div>
+              </div> -->
             </div>
-            <div class="grid-2">
+            <!-- <div class="grid-2">
               <div class="form-row">
                 <label>Usia</label>
                 <input type="number" class="input age" min="0" max="120" placeholder="Usia">
@@ -54,7 +56,7 @@
                 <label>Pekerjaan</label>
                 <input type="text" class="input occupation" placeholder="Pekerjaan">
               </div>
-            </div>
+            </div> -->
 
             <hr>
 
@@ -62,15 +64,17 @@
             <div class="produk-area">
               <div class="grid-2">
                 <div class="form-row product-container">
-                  <label>Nama Produk</label>
+                  <label>Nama Jasa</label>
                   <input type="text" class="input product-search" placeholder="Ketik nama produk...">
                   <div class="dropdown-list"></div>
                   <input type="hidden" class="product_id">
                   <input type="hidden" class="product_type">
                 </div>
+              </div>
+              <div class="grid-2">
                 <div class="form-row">
-                  <label>Qty</label>
-                  <input type="number" class="input qty" min="1" value="1">
+                  <label>Berat</label>
+                  <input type="number" class="input weight" min="1" value="1">
                 </div>
               </div>
               <div class="grid-2">
@@ -78,17 +82,17 @@
                   <label>Price (Rupiah)</label>
                   <input type="number" class="input price" min="0" placeholder="Otomatis" readonly>
                 </div>
-                <div class="form-row">
+                <!-- <div class="form-row">
                   <label>Scheduled Date</label>
                   <input type="date" class="input scheduled_date">
-                </div>
+                </div> -->
               </div>
               <div class="grid-2">
-                <div class="form-row">
+                <!-- <div class="form-row">
                   <label>Scheduled Time</label>
                   <input type="time" class="input scheduled_time">
-                </div>
-                <div class="form-row">
+                </div> -->
+                <!-- <div class="form-row">
                   <label>Staff NIK</label>
                   <select class="input staff_nik">
                     <option selected disabled>Pilih Staff</option>
@@ -96,13 +100,13 @@
                       <option value="{{ $s->nik }}" data-location="{{ $s->location }}">{{ $s->name }} ({{ $s->location }})</option>
                     @endforeach
                   </select>
-                </div>
+                </div> -->
               </div>
               <div class="grid-2">
-                <div class="form-row">
+                <!-- <div class="form-row">
                   <label>Location</label>
                   <input type="text" class="input location" placeholder="Otomatis" readonly>
-                </div>
+                </div> -->
                 <div class="form-row">
                   <label>Status</label>
                   <select class="input status">
@@ -120,14 +124,14 @@
                 <table class="table">
                   <thead>
                     <tr>
-                      <th>Produk</th>
-                      <th>Qty</th>
+                      <th>Jasa</th>
+                      <th>Berat</th>
                       <th>Harga</th>
                       <th>Subtotal</th>
-                      <th>Staff</th>
+                      <!-- <th>Staff</th>
                       <th>Lokasi</th>
                       <th>Tanggal</th>
-                      <th>Jam</th>
+                      <th>Jam</th> -->
                       <th></th>
                     </tr>
                   </thead>
@@ -150,8 +154,8 @@
       </div>
     </div>
 
-    {{-- ¼: REKOMENDASI --}}
-    @include('partials.rekomendasi')
+    <!-- {{-- ¼: REKOMENDASI --}} -->
+   
   </div>
 </section>
 
@@ -197,12 +201,12 @@ document.addEventListener('DOMContentLoaded', ()=>{
     newContent.querySelector('.product-search').value = '';
     newContent.querySelector('.product_id').value = '';
     newContent.querySelector('.product_type').value = '';
-    newContent.querySelector('.qty').value = 1;
+    newContent.querySelector('.weight').value = 1;
     newContent.querySelector('.price').value = '';
     newContent.querySelector('.scheduled_date').value = '';
     newContent.querySelector('.scheduled_time').value = '';
-    newContent.querySelector('.staff_nik').selectedIndex = 0;
-    newContent.querySelector('.location').value = '';
+    // newContent.querySelector('.staff_nik').selectedIndex = 0;
+    // newContent.querySelector('.location').value = '';
     newContent.querySelector('.sum-total').textContent = 'Rp. 0';
 
     activateTab(newTab);
@@ -229,11 +233,11 @@ document.addEventListener('DOMContentLoaded', ()=>{
 
   function initTabForm(wrapper){
     // lokasi auto dari staff
-    const staffSelect = wrapper.querySelector('.staff_nik');
-    staffSelect.addEventListener('change', e=>{
-      const opt = e.target.selectedOptions[0];
-      wrapper.querySelector('.location').value = opt?.dataset.location || '';
-    });
+    // const staffSelect = wrapper.querySelector('.staff_nik');
+    // staffSelect.addEventListener('change', e=>{
+    //   const opt = e.target.selectedOptions[0];
+    //   wrapper.querySelector('.location').value = opt?.dataset.location || '';
+    // });
 
     attachProductSearch(wrapper);
 
@@ -308,48 +312,48 @@ document.addEventListener('DOMContentLoaded', ()=>{
   function tambahKeRingkasan(wrapper){
     // ambil nilai awal
     const nameEl   = wrapper.querySelector('.product-search');
-    const qtyEl    = wrapper.querySelector('.qty');
+    const weightEl    = wrapper.querySelector('.weight');
     const priceEl  = wrapper.querySelector('.price');
     const idEl     = wrapper.querySelector('.product_id');
     const typeEl   = wrapper.querySelector('.product_type');
     const dateEl   = wrapper.querySelector('.scheduled_date');
     const timeEl   = wrapper.querySelector('.scheduled_time');
-    const staffSel = wrapper.querySelector('.staff_nik');
+    // const staffSel = wrapper.querySelector('.staff_nik');
 
     const name        = (nameEl?.value || '').trim();
-    const qty         = parseInt(qtyEl?.value || '0', 10) || 0;
+    const weight         = parseFloat(weightEl?.value || '0') || 0;
     const price       = parseFloat(priceEl?.value || '0') || 0;
     const prodId      = parseInt(idEl?.value || '0', 10) || 0;
     const prodTypeVal = (typeEl?.value || '').trim();
     const dateVal     = (dateEl?.value || '').trim();
     const timeVal     = (timeEl?.value || '').trim();
 
-    const staffNik    = staffSel?.value || '';
-    const staffName   = staffSel?.selectedOptions?.[0]?.text.split(' (')[0] || '-';
-    const loc         = staffSel?.selectedOptions?.[0]?.dataset.location || '';
+    // const staffNik    = staffSel?.value || '';
+    // const staffName   = staffSel?.selectedOptions?.[0]?.text.split(' (')[0] || '-';
+    // const loc         = staffSel?.selectedOptions?.[0]?.dataset.location || '';
 
     // Validasi FE
     if (!name || !price || !prodId || !prodTypeVal){
       alert('Lengkapi produk (pilih dari dropdown) dan harga.');
       return;
     }
-    if (!staffNik){
-      alert('Pilih staff terlebih dahulu.');
-      return;
-    }
-    if (prodTypeVal === 'service'){
-      if (!dateVal || !timeVal){
-        alert('Service wajib punya tanggal & jam.');
-        return;
-      }
-    } else { // med
-      if (dateVal || timeVal){
-        alert('Produk MED tidak boleh memiliki tanggal/jam.');
-        return;
-      }
-    }
+    // if (!staffNik){
+    //   alert('Pilih staff terlebih dahulu.');
+    //   return;
+    // }
+    // if (prodTypeVal === 'service'){
+    //   if (!dateVal || !timeVal){
+    //     alert('Service wajib punya tanggal & jam.');
+    //     return;
+    //   }
+    // } else { // med
+    //   if (dateVal || timeVal){
+    //     alert('Produk MED tidak boleh memiliki tanggal/jam.');
+    //     return;
+    //   }
+    // }
 
-    const sub = qty * price;
+    const sub = weight * price;
 
     const tbody = wrapper.querySelector('.sum-body');
     if (tbody.querySelector('.muted')) tbody.innerHTML = '';
@@ -360,11 +364,9 @@ document.addEventListener('DOMContentLoaded', ()=>{
 
     tr.innerHTML = `
       <td>${name}</td>
-      <td>${qty}</td>
+      <td>${weight}</td>
       <td>Rp. ${price.toLocaleString('id-ID')}</td>
       <td>Rp. ${sub.toLocaleString('id-ID')}</td>
-      <td data-nik="${staffNik}">${staffName}</td>
-      <td>${loc}</td>
       <td>${dateVal}</td>
       <td>${timeVal}</td>
       <td><button type="button" class="btn-hapus-produk btn btn-sm btn-outline-danger">Hapus</button></td>
@@ -389,7 +391,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
     nameEl.value  = '';
     idEl.value    = '';
     typeEl.value  = '';
-    qtyEl.value   = 1;
+    weightEl.value   = 1;
     priceEl.value = '';
     // date/time tetap mengikuti toggle produk berikutnya
   }
@@ -416,9 +418,9 @@ document.getElementById('btn-proses').addEventListener('click', async ()=>{
   allTabs.forEach(tab=>{
     const clientData = {
       client_name: tab.querySelector('.client_name').value.trim(),
-      age: tab.querySelector('.age').value || null,
-      occupation: tab.querySelector('.occupation').value.trim(),
-      sex: tab.querySelector('.sex').value || null,
+      // age: tab.querySelector('.age').value || null,
+      // occupation: tab.querySelector('.occupation').value.trim(),
+      // sex: tab.querySelector('.sex').value || null,
       channel: 'Point Of Sale'
     };
 
@@ -430,10 +432,10 @@ document.getElementById('btn-proses').addEventListener('click', async ()=>{
         product_id: parseInt(tr.dataset.productId) || 0,
         product_name: tds[0].textContent.trim(),
         product_type: tr.dataset.productType || 'service',
-        qty: parseInt(tds[1].textContent.replace(/\D/g,'')) || 1,
+        weight: parseFloat(tds[1].textContent.replace(/\D/g,'')) || 1,
         price: parseFloat(tds[2].textContent.replace(/[^\d]/g,'')) || 0,
-        staff_nik: tds[4].dataset.nik || '',
-        location: tds[5].textContent.trim(),
+        // staff_nik: tds[4].dataset.nik || '',
+        // location: tds[5].textContent.trim(),
         scheduled_date: tds[6].textContent.trim() || null,
         scheduled_time: tds[7].textContent.trim() || null,
         status: 'NEW'

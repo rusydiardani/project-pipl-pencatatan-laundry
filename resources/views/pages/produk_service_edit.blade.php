@@ -19,10 +19,10 @@
           <input type="text" name="name" class="input" value="{{ old('name', $service->name) }}" required>
         </div>
 
-        <div class="form-row">
+        <!-- <div class="form-row">
           <label>Durasi</label>
           <input type="text" name="duration" class="input" value="{{ old('duration', $service->duration) }}" placeholder="Contoh: 30 menit / 1 jam">
-        </div>
+        </div> -->
 
         <div class="form-row">
           <label>Harga (Rp)</label>

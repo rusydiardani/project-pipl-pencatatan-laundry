@@ -28,7 +28,7 @@
               <tr>
                 <td>{{ $service->id }}</td>
                 <td>{{ $service->name }}</td>
-                <td>{{ $service->duration ?? '-' }}</td>
+                <!-- <td>{{ $service->duration ?? '-' }}</td> -->
                 <td>Rp {{ number_format($service->price, 0, ',', '.') }}</td>
                 <td>
                   @if($service->available)
@@ -70,10 +70,10 @@
             <input type="text" name="name" class="input" placeholder="Masukkan nama service" required>
           </div>
 
-          <div class="form-row">
+          <!-- <div class="form-row">
             <label>Durasi</label>
             <input type="text" name="duration" class="input" placeholder="Contoh: 30 menit / 1 jam">
-          </div>
+          </div> -->
 
           <div class="form-row">
             <label>Harga (Rp)</label>

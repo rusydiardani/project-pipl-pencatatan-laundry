@@ -26,7 +26,7 @@
           <th>Service</th>
           <th>Scheduled</th>
           <th>Time</th>
-          <th>Duration</th>
+          <!-- <th>Duration</th> -->
           <th>Staff</th>
           <th class="tar">Price</th>
           <th>Status</th>
@@ -42,8 +42,8 @@
             <td>{{ $it->product_name }}</td>
             <td>{{ optional($it->scheduled_date)->format('Y-m-d') }}</td>
             <td>{{ $it->scheduled_time }}</td>
-            <td>{{ $it->duration }}</td>
-            <td>{{ $it->staff?->name ?? $it->staff_nik }}</td>
+            <!-- <td>{{ $it->duration }}</td> -->
+            <!-- <td>{{ $it->staff?->name ?? $it->staff_nik }}</td> -->
             <td class="tar">Rp {{ number_format($it->price,0,',','.') }}</td>
             <td>{{ $it->status }}</td>
           </tr>
@@ -76,9 +76,9 @@
             <td>{{ $it->created_by }}</td>
             <td>{{ $it->client_name }}</td>
             <td>{{ $it->product_name }}</td>
-            <td>{{ $it->qty }}</td>
+            <td>{{ $it->weight }}</td>
             <td class="tar">Rp {{ number_format($it->price,0,',','.') }}</td>
-            <td class="tar">Rp {{ number_format($it->qty * $it->price,0,',','.') }}</td>
+            <td class="tar">Rp {{ number_format($it->weight * $it->price,0,',','.') }}</td>
           </tr>
         @empty
           <tr><td colspan="7" class="muted">Tidak ada obat.</td></tr>

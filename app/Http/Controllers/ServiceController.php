@@ -29,7 +29,7 @@ class ServiceController extends Controller
         'id'       => $service->id,
         'name'     => $service->name,
         'price'    => $service->price,
-        'duration' => $service->duration,
+        // 'duration' => $service->duration,
     ]);
     }
 
@@ -40,7 +40,7 @@ class ServiceController extends Controller
     {
         $data = $request->validate([
             'name'      => 'required|string|max:255',
-            'duration'  => 'nullable|string|max:100',
+            // 'duration'  => 'nullable|string|max:100',
             'price'     => 'required|numeric|min:0',
             'available' => 'required|boolean',
         ]);
@@ -65,7 +65,7 @@ class ServiceController extends Controller
     {
         $data = $request->validate([
             'name'      => 'required|string|max:255',
-            'duration'  => 'nullable|string|max:100',
+            // 'duration'  => 'nullable|string|max:100',
             'price'     => 'required|numeric|min:0',
             'available' => 'required|boolean',
         ]);
