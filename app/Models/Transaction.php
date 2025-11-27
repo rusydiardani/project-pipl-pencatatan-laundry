@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Schema;
 
 class Transaction extends Model
 {
@@ -18,7 +19,7 @@ class Transaction extends Model
         // 'age',
         // 'occupation',
         // 'sex',
-        // 'product_type',
+        'product_type',
         'product_id',
         'product_name',
         'weight',
@@ -33,21 +34,36 @@ class Transaction extends Model
 
     protected $casts = [
         'scheduled_date' => 'date',
-        'scheduled_time' => 'string', // Ubah ke string agar tidak error konversi waktu
+        'scheduled_time' => 'string',
         'status' => 'string',
         'price' => 'decimal:2',
         'weight' => 'decimal:2',
     ];
 
-    // Relasi ke Staff
-    // public function staff()
-    // {
-    //     return $this->belongsTo(Staff::class, 'staff_nik', 'nik');
-    // }
+    public function staff()
+    {
+        return $this->belongsTo(Staff::class, 'staff_nik', 'nik');
+    }
 
-    // Accessor subtotal otomatis
     public function getSubtotalAttribute()
     {
-        return $this->weight * $this->price;
+        return ((float) $this->weight) * ((float) $this->price);
+    }
+
+    public function getWeightAttribute($value)
+    {
+        if (Schema::hasColumn($this->getTable(), 'weight_dec')) {
+            $w = $this->attributes['weight_dec'] ?? null;
+            if ($w !== null) return (float) $w;
+        }
+        return (float) $value;
+    }
+
+    public function setWeightAttribute($value)
+    {
+        if (Schema::hasColumn($this->getTable(), 'weight_dec')) {
+            $this->attributes['weight_dec'] = is_numeric($value) ? round((float) $value, 2) : null;
+        }
+        $this->attributes['weight'] = is_numeric($value) ? (float) $value : $value;
     }
 }

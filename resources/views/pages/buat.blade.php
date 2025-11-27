@@ -74,7 +74,7 @@
               <div class="grid-2">
                 <div class="form-row">
                   <label>Berat</label>
-                  <input type="number" class="input weight" min="1" value="1">
+                  <input type="number" class="input weight" step="0.1" min="0.1" value="1">
                 </div>
               </div>
               <div class="grid-2">
@@ -292,14 +292,16 @@ document.addEventListener('DOMContentLoaded', ()=>{
       // toggle jadwal sesuai tipe
       const dateEl = wrapper.querySelector('.scheduled_date');
       const timeEl = wrapper.querySelector('.scheduled_time');
-      if (type === 'service') {
-        dateEl.removeAttribute('disabled');
-        timeEl.removeAttribute('disabled');
-      } else { // med
-        dateEl.value = '';
-        timeEl.value = '';
-        dateEl.setAttribute('disabled', 'disabled');
-        timeEl.setAttribute('disabled', 'disabled');
+      if (dateEl && timeEl) {
+        if (type === 'service') {
+          dateEl.removeAttribute('disabled');
+          timeEl.removeAttribute('disabled');
+        } else {
+          dateEl.value = '';
+          timeEl.value = '';
+          dateEl.setAttribute('disabled', 'disabled');
+          timeEl.setAttribute('disabled', 'disabled');
+        }
       }
       list.style.display = 'none';
     });
@@ -361,6 +363,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
     const tr = document.createElement('tr');
     tr.dataset.productId   = String(prodId);
     tr.dataset.productType = prodTypeVal;
+    tr.dataset.weight      = String(weight);
 
     tr.innerHTML = `
       <td>${name}</td>
@@ -432,12 +435,12 @@ document.getElementById('btn-proses').addEventListener('click', async ()=>{
         product_id: parseInt(tr.dataset.productId) || 0,
         product_name: tds[0].textContent.trim(),
         product_type: tr.dataset.productType || 'service',
-        weight: parseFloat(tds[1].textContent.replace(/\D/g,'')) || 1,
+        weight: parseFloat(tr.dataset.weight || '0') || 1,
         price: parseFloat(tds[2].textContent.replace(/[^\d]/g,'')) || 0,
         // staff_nik: tds[4].dataset.nik || '',
         // location: tds[5].textContent.trim(),
-        scheduled_date: tds[6].textContent.trim() || null,
-        scheduled_time: tds[7].textContent.trim() || null,
+        scheduled_date: tds[4].textContent.trim() || null,
+        scheduled_time: tds[5].textContent.trim() || null,
         status: 'NEW'
       });
     });

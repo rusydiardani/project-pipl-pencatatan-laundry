@@ -10,7 +10,7 @@ class TransactionController extends Controller
 {
     public function index()
     {
-        $transactions = Transaction::with('staff')->get();
+        $transactions = Transaction::all();
         return response()->json($transactions);
     }
 
@@ -26,7 +26,7 @@ class TransactionController extends Controller
         'items' => 'required|array|min:1',
         'items.*.product_id' => 'required|integer',
         'items.*.product_name' => 'required|string',
-        // 'items.*.product_type' => 'required|in:service,med',
+        'items.*.product_type' => 'required|in:service,med',
         'items.*.weight' => 'required|numeric|min:1',
         'items.*.price' => 'required|numeric|min:0',
         // 'items.*.duration' => 'nullable|string',
@@ -38,28 +38,7 @@ class TransactionController extends Controller
         'items.*.status' => 'nullable|in:NEW,COMPLETED',
     ]);
 
-    // Validasi kondisional: service wajib jadwal, med dilarang jadwal; staff wajib
-    $errors = [];
-    foreach ($validated['items'] as $idx => $item) {
-        $row = $idx + 1;
-
-        if ($item['product_type'] === 'service') {
-            if (empty($item['scheduled_date']) || empty($item['scheduled_time'])) {
-                $errors["items.$idx.scheduled"] = ["Baris #$row (service) wajib isi tanggal & jam."];
-            }
-        } else { // med
-            if (!empty($item['scheduled_date']) || !empty($item['scheduled_time'])) {
-                $errors["items.$idx.scheduled"] = ["Baris #$row (med) tidak boleh punya tanggal/jam."];
-            }
-        }
-
-        // if (empty($item['staff_nik'])) {
-        //     $errors["items.$idx.staff_nik"] = ["Baris #$row wajib pilih staff."];
-        // }
-    }
-    if (!empty($errors)) {
-        return response()->json(['message' => 'Validasi gagal', 'errors' => $errors], 422);
-    }
+    // Jadwal bersifat opsional untuk service, dan diabaikan untuk med
 
     // Generate ref & created_by di server
     $ref  = 'TX-' . now()->format('YmdHis') . rand(100, 999);
@@ -90,7 +69,7 @@ class TransactionController extends Controller
             // 'staff_nik'         => $item['staff_nik'],
             // 'location'          => $item['location'],
 
-            'status'            => $item['status'] ?? 'On Process',
+            'status'            => $item['status'] ?? 'NEW',
         ]);
     }
 
@@ -100,7 +79,7 @@ class TransactionController extends Controller
 
     public function show(Transaction $transaction)
     {
-        return response()->json($transaction->load('staff'));
+        return response()->json($transaction);
     }
 
     public function update(Request $request, Transaction $transaction)
@@ -171,7 +150,7 @@ public function destroyByRef(string $ref_no)
 //detailtransaksi
     public function detailByRef(string $ref_no)
 {
-    $items = \App\Models\Transaction::with('staff')
+    $items = \App\Models\Transaction::query()
         ->where('ref_no', $ref_no)
         ->orderBy('id')
         ->get();
