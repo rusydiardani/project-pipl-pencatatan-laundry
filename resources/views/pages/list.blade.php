@@ -47,13 +47,17 @@
           <td class="tar">Rp {{ number_format($t->total, 0, ',', '.') }}</td>
           <td>{{ ($t->on_process_count ?? 0) > 0 ? ($t->on_process_count.' ON PROCESS') : 'COMPLETED' }}</td>
           <td>
-            <a href="{{ route('transactions.detail', $t->ref_no) }}" class="btn btn-sm btn-primary">Detail</a>
-            <form action="{{ route('transactions.destroyByRef', $t->ref_no) }}" method="POST" style="display:inline"
-                  onsubmit="return confirm('Hapus transaksi {{ $t->ref_no }} ({{ $t->items_count }} item)? Tindakan ini tidak bisa dibatalkan.');">
-              @csrf
-              @method('DELETE')
-              <button type="submit" class="btn btn-sm btn-outline-danger">Hapus</button>
-            </form>
+            <div style="display:flex; gap:6px; flex-wrap:wrap;">
+              <a href="{{ route('transactions.detail', $t->ref_no) }}" class="btn btn-sm btn-primary">Detail</a>
+              <a href="{{ route('transactions.edit', $t->ref_no) }}" class="btn btn-sm btn-warning">Edit</a>
+              <a href="{{ route('transactions.print', $t->ref_no) }}" target="_blank" class="btn btn-sm btn-success">Print</a>
+              <form action="{{ route('transactions.destroyByRef', $t->ref_no) }}" method="POST" style="display:inline; margin:0;"
+                    onsubmit="return confirm('Hapus transaksi {{ $t->ref_no}} ({{ $t->items_count }} item)? Tindakan ini tidak bisa dibatalkan.');">
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="btn btn-sm btn-danger">Hapus</button>
+              </form>
+            </div>
           </td>
         </tr>
       @empty

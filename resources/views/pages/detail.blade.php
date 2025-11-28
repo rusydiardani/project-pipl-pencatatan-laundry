@@ -27,6 +27,7 @@
           <th>Created By</th>
           <th>Client</th>
           <th>Service</th>
+          <th>Schedule</th>
           <th>Weight</th>
           <th class="tar">Price</th>
           <th class="tar">Subtotal</th>
@@ -42,6 +43,14 @@
             <td>{{ $it->created_by }}</td>
             <td>{{ $it->client_name }}</td>
             <td>{{ $it->product_name }}</td>
+            <td>
+              @if($it->scheduled_date)
+                {{ \Carbon\Carbon::parse($it->scheduled_date)->format('d M Y') }}
+                @if($it->scheduled_time) <br><small>{{ $it->scheduled_time }}</small> @endif
+              @else
+                -
+              @endif
+            </td>
             <td>{{ $it->weight }}</td>
             <td class="tar">Rp {{ number_format($it->price,0,',','.') }}</td>
             <td class="tar">Rp {{ number_format($it->weight * $it->price,0,',','.') }}</td>

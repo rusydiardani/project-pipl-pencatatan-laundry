@@ -36,7 +36,11 @@
             <div class="grid-2">
               <div class="form-row">
                 <label>Nama Client</label>
-                <input type="text" class="input client_name" placeholder="Nama client">
+                <div class="client-container" style="position:relative;">
+                  <input type="text" class="input client_name client-search" placeholder="Ketik nama pelanggan..." autocomplete="off">
+                  <input type="hidden" class="client_id">
+                  <div class="client-dropdown-list" style="position:absolute; top:100%; left:0; width:100%; max-height:200px; overflow-y:auto; background:#fff; border:1px solid #ccc; z-index:100; display:none; border-radius:4px;"></div>
+                </div>
               </div>
               <!-- <div class="form-row">
                 <label>Jenis Kelamin</label>
@@ -82,16 +86,16 @@
                   <label>Price (Rupiah)</label>
                   <input type="number" class="input price" min="0" placeholder="Otomatis" readonly>
                 </div>
-                <!-- <div class="form-row">
+                <div class="form-row">
                   <label>Scheduled Date</label>
-                  <input type="date" class="input scheduled_date">
-                </div> -->
+                  <input type="date" class="input scheduled_date" disabled>
+                </div>
               </div>
               <div class="grid-2">
-                <!-- <div class="form-row">
+                <div class="form-row">
                   <label>Scheduled Time</label>
-                  <input type="time" class="input scheduled_time">
-                </div> -->
+                  <input type="time" class="input scheduled_time" disabled>
+                </div>
                 <!-- <div class="form-row">
                   <label>Staff NIK</label>
                   <select class="input staff_nik">
@@ -158,6 +162,84 @@
   <button class="btn btn-primary" id="btn-proses">Proses Transaksi</button>
 </div>
 
+  // =============== CUSTOMER SEARCH ===================
+  function attachClientSearch(wrapper){
+    const input = wrapper.querySelector('.client-search');
+    const container = wrapper.querySelector('.client-container');
+    const list = wrapper.querySelector('.client-dropdown-list');
+    const idInput = wrapper.querySelector('.client_id');
+
+    // reset
+    list.innerHTML=''; list.style.display='none';
+
+    input.addEventListener('input', async ()=>{
+      const q = input.value.trim(); 
+      if(q.length < 2){ list.style.display='none'; return; }
+      
+      try{
+        const res = await fetch(`{{ route('customers.index') }}?search=${encodeURIComponent(q)}`);
+        // Note: customers.index returns HTML view by default. 
+        // We need to ensure it returns JSON if requested via AJAX or create specific API.
+        // For now, let's assume we modify controller to return JSON if ajax.
+        // OR better, create a specific search route for customers API-like.
+        // Let's use a specific route or modify controller index to check wantsJson().
+        
+        // Let's try to fetch from a new route or modify controller.
+        // Since I haven't modified controller to return JSON, this might fail if I don't.
+        // I will modify CustomerController@index to return JSON if request->wantsJson().
+        
+        const text = await res.text();
+        // Check if it's JSON
+        try {
+            const data = JSON.parse(text);
+             // If data is wrapped in pagination or something, adjust.
+             // Assuming controller returns collection or array.
+             
+             list.innerHTML = '';
+             // If data.data exists (pagination), use it.
+             const customers = data.data ? data.data : data;
+             
+             if(Array.isArray(customers)){
+                 customers.forEach(c=>{
+                   const opt = document.createElement('div');
+                   opt.className = 'dropdown-option';
+                   opt.style.padding = '8px';
+                   opt.style.cursor = 'pointer';
+                   opt.style.borderBottom = '1px solid #eee';
+                   opt.innerHTML = `<strong>${c.name}</strong><br><small>${c.phone}</small>`;
+                   opt.dataset.id = c.id;
+                   opt.dataset.name = c.name;
+                   opt.dataset.phone = c.phone;
+                   
+                   opt.addEventListener('click', ()=>{
+                     input.value = c.name;
+                     idInput.value = c.id;
+                     list.style.display = 'none';
+                   });
+                   
+                   list.appendChild(opt);
+                 });
+                 list.style.display = customers.length ? 'block' : 'none';
+             }
+        } catch(e) {
+            // Not JSON, maybe HTML?
+            console.error('Response not JSON', e);
+        }
+      }catch(err){ console.error(err); }
+    });
+
+    document.addEventListener('click', (e)=>{
+      if(!container.contains(e.target)) list.style.display='none';
+    });
+  }
+  
+  // Attach to initial tab
+  attachClientSearch(document.querySelector('.tab-content.active'));
+  
+  // Update btnAdd listener to attach to new tabs
+  // ... (need to update btnAdd listener logic above) ...
+
+</script>
 <script>
 document.addEventListener('DOMContentLoaded', ()=>{
   let tabCount = 1;
@@ -199,12 +281,16 @@ document.addEventListener('DOMContentLoaded', ()=>{
     newContent.querySelector('.price').value = '';
     newContent.querySelector('.scheduled_date').value = '';
     newContent.querySelector('.scheduled_time').value = '';
-    // newContent.querySelector('.staff_nik').selectedIndex = 0;
-    // newContent.querySelector('.location').value = '';
+    
+    // Clean client inputs
+    newContent.querySelector('.client-search').value = '';
+    newContent.querySelector('.client_id').value = '';
+    
     newContent.querySelector('.sum-total').textContent = 'Rp. 0';
 
     activateTab(newTab);
     initTabForm(newContent);
+    attachClientSearch(newContent); // Attach search to new tab
   });
 
   btnRem.addEventListener('click', ()=>{
@@ -338,17 +424,18 @@ document.addEventListener('DOMContentLoaded', ()=>{
     //   alert('Pilih staff terlebih dahulu.');
     //   return;
     // }
-    // if (prodTypeVal === 'service'){
-    //   if (!dateVal || !timeVal){
-    //     alert('Service wajib punya tanggal & jam.');
-    //     return;
-    //   }
-    // } else { // med
-    //   if (dateVal || timeVal){
-    //     alert('Produk MED tidak boleh memiliki tanggal/jam.');
-    //     return;
-    //   }
-    // }
+    if (prodTypeVal === 'service'){
+      if (!dateVal || !timeVal){
+        alert('Service wajib punya tanggal & jam.');
+        return;
+      }
+    } else { // med
+      if (dateVal || timeVal){
+        // alert('Produk MED tidak boleh memiliki tanggal/jam.');
+        // return;
+        // Optional: clear them just in case
+      }
+    }
 
     const sub = weight * price;
 
@@ -406,6 +493,9 @@ document.addEventListener('DOMContentLoaded', ()=>{
 
   // init tab pertama
   initTabForm(document.querySelector('.tab-content.active'));
+  
+  // Attach search to initial tab
+  attachClientSearch(document.querySelector('.tab-content.active'));
 });
 
 // =============== PROSES TRANSAKSI (MULTI CLIENT) ===================
@@ -416,6 +506,7 @@ document.getElementById('btn-proses').addEventListener('click', async ()=>{
   allTabs.forEach(tab=>{
     const clientData = {
       client_name: tab.querySelector('.client_name').value.trim(),
+      customer_id: tab.querySelector('.client_id').value || null,
       // age: tab.querySelector('.age').value || null,
       // occupation: tab.querySelector('.occupation').value.trim(),
       // sex: tab.querySelector('.sex').value || null,

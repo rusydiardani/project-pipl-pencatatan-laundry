@@ -16,6 +16,7 @@ class Transaction extends Model
         'created_at_manual',
         'created_by',
         'client_name',
+        'customer_id', // [BARU] untuk relationship
         // 'age',
         // 'occupation',
         // 'sex',
@@ -30,15 +31,23 @@ class Transaction extends Model
         // 'staff_nik',
         // 'location',
         'status',
+        'payment_status', // [BARU] CRITICAL FIX
     ];
 
     protected $casts = [
         'scheduled_date' => 'date',
         'scheduled_time' => 'string',
         'status' => 'string',
+        'payment_status' => 'string', // [BARU]
         'price' => 'decimal:2',
         'weight' => 'decimal:2',
     ];
+
+    // Relationships
+    public function customer()
+    {
+        return $this->belongsTo(\App\Models\Customer::class);
+    }
 
     public function staff()
     {

@@ -1,15 +1,19 @@
 <nav class="nav">
   <div class="nav-left">
-    <a class="nav-brand" href="{{ route('draft.page') }}">Home</a>
+    <a class="nav-brand" href="{{ route('dashboard') }}">Laundry App</a>
+    <a class="nav-link" href="{{ route('dashboard') }}">Home</a>
     <a class="nav-link" href="{{ route('list.page') }}">List Transaksi</a>
+    <a class="nav-link" href="{{ route('reports.index') }}">Laporan</a>
+    <!-- <a class="nav-link" href="{{ route('customers.index') }}">Pelanggan</a> -->
     <a class="nav-link" href="{{ route('buat.page') }}">Buat Transaksi</a>
 
-    {{-- Dropdown Produk --}}
+    {{-- Dropdown Master Data --}}
     <div class="nav-dropdown">
-      <button class="nav-link dropdown-toggle" data-dd>Service ▾</button>
+      <button class="nav-link dropdown-toggle" data-dd>Data Master ▾</button>
       <div class="dropdown-menu">
-        <a href="{{ route('service.index') }}" class="dropdown-item">Add Service</a>
-        <!-- <a href="{{ route('med.index') }}" class="dropdown-item">Obat</a> -->
+        <a href="{{ route('service.index') }}" class="dropdown-item">Layanan (Service)</a>
+        <a href="{{ route('products.index') }}" class="dropdown-item">Barang (Stok)</a>
+        <a href="{{ route('customers.index') }}" class="dropdown-item">Pelanggan</a>
       </div>
     </div>
 

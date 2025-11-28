@@ -6,6 +6,7 @@ use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use App\Services\PrintService;
 
 class TransactionController extends Controller
 {
@@ -15,67 +16,77 @@ class TransactionController extends Controller
         return response()->json($transactions);
     }
 
-   public function store(Request $request)
-{
-    // Validasi dasar (tanpa ref_no & created_by dari FE)
-    $validated = $request->validate([
-        'client_name' => 'required|string',
-        // 'age' => 'nullable|integer|min:0|max:120',
-        // 'occupation' => 'nullable|string',
-        // 'sex' => 'nullable|in:M,F',
-
-        'items' => 'required|array|min:1',
-        'items.*.product_id' => 'required|integer',
-        'items.*.product_name' => 'required|string',
-        'items.*.product_type' => 'required|in:service,med',
-        'items.*.weight' => 'required|numeric|min:0.1',
-        'items.*.price' => 'required|numeric|min:0',
-        // 'items.*.duration' => 'nullable|string',
-
-        'items.*.scheduled_date' => 'nullable|date',
-        'items.*.scheduled_time' => 'nullable',
-        // 'items.*.staff_nik' => 'required|string',
-        // 'items.*.location' => 'required|string',
-        'items.*.status' => 'nullable|in:ON PROCESS,COMPLETED',
-    ]);
-
-    // Jadwal bersifat opsional untuk service, dan diabaikan untuk med
-
-    // Generate ref & created_by di server
-    $ref  = 'TX-' . now()->format('YmdHis') . rand(100, 999);
-    $user = Auth::user()?->username ?? 'system';
-
-    foreach ($validated['items'] as $item) {
-        Transaction::create([
-            'ref_no'            => $ref,
-            'channel'           => 'Point Of Sale',
-            'created_at_manual' => now(), // ubah/nullable sesuai kebutuhanmu
-            'created_by'        => $user,
-
-            'client_name'       => $validated['client_name'],
-            // 'age'               => $validated['age'] ?? null,
-            // 'occupation'        => $validated['occupation'] ?? null,
-            // 'sex'               => $validated['sex'] ?? null,
-
-            'product_id'        => $item['product_id'],
-            'product_name'      => $item['product_name'],
-            'product_type'      => $item['product_type'],
-            'weight'               => $item['weight'],
-            'price'             => $item['price'],
-            // 'duration'          => $item['duration'] ?? null,
-
-            'scheduled_date'    => $item['product_type'] === 'service' ? ($item['scheduled_date'] ?? null) : null,
-            'scheduled_time'    => $item['product_type'] === 'service' ? ($item['scheduled_time'] ?? null) : null,
-
-            // 'staff_nik'         => $item['staff_nik'],
-            // 'location'          => $item['location'],
-
-            'status'            => $item['status'] ?? 'ON PROCESS',
-        ]);
+    public function createPage()
+    {
+        return view('pages.buat');
     }
 
-    return response()->json(['success' => true, 'ref_no' => $ref]);
-}
+    public function store(Request $request)
+    {
+        // Validasi dasar (tanpa ref_no & created_by dari FE)
+        $validated = $request->validate([
+            'client_name' => 'required|string',
+            'customer_id' => 'nullable|exists:customers,id',
+            // 'age' => 'nullable|integer|min:0|max:120',
+            // 'occupation' => 'nullable|string',
+            // 'sex' => 'nullable|in:M,F',
+
+            'items' => 'required|array|min:1',
+            'items.*.product_id' => 'required|integer',
+            'items.*.product_name' => 'required|string',
+            'items.*.product_type' => 'required|in:service,med',
+            'items.*.weight' => 'required|numeric|min:0.1',
+            'items.*.price' => 'required|numeric|min:0',
+            // 'items.*.duration' => 'nullable|string',
+
+            'items.*.scheduled_date' => 'nullable|date',
+            'items.*.scheduled_time' => 'nullable',
+            // 'items.*.staff_nik' => 'required|string',
+            // 'items.*.location' => 'required|string',
+            'items.*.status' => 'nullable|in:ON PROCESS,COMPLETED',
+        ]);
+
+        // Jadwal bersifat opsional untuk service, dan diabaikan untuk med
+
+        // Generate ref & created_by di server
+        $ref  = 'TX-' . now()->format('YmdHis') . rand(100, 999);
+        $user = Auth::user()?->username ?? 'system';
+
+        foreach ($validated['items'] as $item) {
+            $transaction = Transaction::create([
+                'ref_no'            => $ref,
+                'channel'           => 'Point Of Sale',
+                'created_at_manual' => now(), // ubah/nullable sesuai kebutuhanmu
+                'created_by'        => $user,
+
+                'client_name'       => $validated['client_name'],
+                'customer_id'       => $validated['customer_id'] ?? null,
+                // 'age'               => $validated['age'] ?? null,
+                // 'occupation'        => $validated['occupation'] ?? null,
+                // 'sex'               => $validated['sex'] ?? null,
+
+                'product_id'        => $item['product_id'],
+                'product_name'      => $item['product_name'],
+                'product_type'      => $item['product_type'],
+                'weight'               => $item['weight'],
+                'price'             => $item['price'],
+                // 'duration'          => $item['duration'] ?? null,
+
+                'scheduled_date'    => $item['product_type'] === 'service' ? ($item['scheduled_date'] ?? null) : null,
+                'scheduled_time'    => $item['product_type'] === 'service' ? ($item['scheduled_time'] ?? null) : null,
+
+                // 'staff_nik'         => $item['staff_nik'],
+                // 'location'          => $item['location'],
+
+                'status'            => $item['status'] ?? 'ON PROCESS',
+            ]);
+
+            // Fire event for stock deduction
+            \App\Events\TransactionCreated::dispatch($transaction);
+        }
+
+        return response()->json(['success' => true, 'ref_no' => $ref]);
+    }
 
 
     public function show(Transaction $transaction)
@@ -262,6 +273,58 @@ public function destroyByRef(string $ref_no)
 //     ]);
 // }
 
+    /**
+     * Show form edit status transaksi
+     */
+    public function edit(string $refNo)
+    {
+        $transactions = Transaction::where('ref_no', $refNo)->get();
+        
+        if ($transactions->isEmpty()) {
+            return redirect()->route('list.page')->with('error', 'Transaksi tidak ditemukan');
+        }
+        
+        // Ambil data umum dari item pertama
+        $transaction = $transactions->first();
+        
+        return view('pages.transaction_edit', compact('transaction', 'transactions'));
+    }
 
+    /**
+     * Update status transaksi by Ref No
+     */
+    public function updateByRef(Request $request, string $refNo, \App\Services\TransactionService $transactionService)
+    {
+        $request->validate([
+            'status' => 'required|in:NEW,RECEIVED,PROCESS,WASHING,IRONING,READY,COMPLETED,PICKED_UP,CANCELLED',
+            'payment_status' => 'required|in:PAID,UNPAID',
+        ]);
+
+        // Gunakan service atau direct update
+        // Karena kita belum fully migrate ke service di controller ini, kita direct update dulu
+        // atau gunakan logic manual untuk trigger event jika perlu.
+        // Untuk sekarang direct update agar cepat fix.
+        
+        Transaction::where('ref_no', $refNo)->update([
+            'status' => $request->status,
+            'payment_status' => $request->payment_status,
+        ]);
+
+        return redirect()->route('list.page')->with('success', 'Status transaksi berhasil diperbarui');
+    }
+
+    /**
+     * Generate dan download PDF receipt
+     */
+    public function printReceipt(string $refNo, PrintService $printService)
+    {
+        $pdf = $printService->generateReceipt($refNo);
+        
+        // Download PDF dengan nama file yang sesuai
+        return $pdf->download("struk-{$refNo}.pdf");
+        
+        // Atau jika ingin ditampilkan di browser (bukan download):
+        // return $pdf->stream("struk-{$refNo}.pdf");
+    }
 
 }
