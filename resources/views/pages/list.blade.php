@@ -32,6 +32,7 @@
           <th>Created By</th>
           <th>Client</th>
           <th class="tar">Total</th>
+          <th>Status</th>
           <th style="width: 160px;">Aksi</th>
         </tr>
       </thead>
@@ -44,6 +45,7 @@
           <td>{{ $t->created_by }}</td>
           <td>{{ $t->client_name }}</td>
           <td class="tar">Rp {{ number_format($t->total, 0, ',', '.') }}</td>
+          <td>{{ ($t->on_process_count ?? 0) > 0 ? ($t->on_process_count.' ON PROCESS') : 'COMPLETED' }}</td>
           <td>
             <a href="{{ route('transactions.detail', $t->ref_no) }}" class="btn btn-sm btn-primary">Detail</a>
             <form action="{{ route('transactions.destroyByRef', $t->ref_no) }}" method="POST" style="display:inline"
@@ -55,7 +57,7 @@
           </td>
         </tr>
       @empty
-        <tr><td colspan="7" class="muted">Belum ada transaksi.</td></tr>
+        <tr><td colspan="8" class="muted">Belum ada transaksi.</td></tr>
       @endforelse
       </tbody>
     </table>

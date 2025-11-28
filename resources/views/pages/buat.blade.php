@@ -107,13 +107,7 @@
                   <label>Location</label>
                   <input type="text" class="input location" placeholder="Otomatis" readonly>
                 </div> -->
-                <div class="form-row">
-                  <label>Status</label>
-                  <select class="input status">
-                    <option value="NEW">NEW</option>
-                    <option value="COMPLETED">COMPLETED</option>
-                  </select>
-                </div>
+                
               </div>
               <button type="button" class="btn btn-sm btn-primary btn-tambah-ke-ringkasan">Tambah ke Ringkasan</button>
             </div>
@@ -320,6 +314,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
     const typeEl   = wrapper.querySelector('.product_type');
     const dateEl   = wrapper.querySelector('.scheduled_date');
     const timeEl   = wrapper.querySelector('.scheduled_time');
+    
     // const staffSel = wrapper.querySelector('.staff_nik');
 
     const name        = (nameEl?.value || '').trim();
@@ -428,7 +423,7 @@ document.getElementById('btn-proses').addEventListener('click', async ()=>{
     };
 
     const items = [];
-    tab.querySelectorAll('.sum-body tr').forEach(tr=>{
+  tab.querySelectorAll('.sum-body tr').forEach(tr=>{
       if(tr.querySelector('.muted')) return;
       const tds = tr.querySelectorAll('td');
       items.push({
@@ -441,7 +436,7 @@ document.getElementById('btn-proses').addEventListener('click', async ()=>{
         // location: tds[5].textContent.trim(),
         scheduled_date: tds[4].textContent.trim() || null,
         scheduled_time: tds[5].textContent.trim() || null,
-        status: 'NEW'
+        
       });
     });
 

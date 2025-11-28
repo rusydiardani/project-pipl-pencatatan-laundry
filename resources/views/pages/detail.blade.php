@@ -13,6 +13,9 @@
 </section>
 
 <section class="summary" id="detail-root">
+  @if(session('success'))
+    <div class="alert alert-success" style="margin-bottom:12px;">{{ session('success') }}</div>
+  @endif
   {{-- Service --}}
   <div class="table-wrap" id="box-service" style="margin-bottom:16px;">
     <div class="table-title">Service</div>
@@ -26,7 +29,9 @@
           <th>Service</th>
           <th>Weight</th>
           <th class="tar">Price</th>
+          <th class="tar">Subtotal</th>
           <th>Status</th>
+          <th>Action</th>
         </tr>
       </thead>
       <tbody id="tbody-service">
@@ -39,10 +44,22 @@
             <td>{{ $it->product_name }}</td>
             <td>{{ $it->weight }}</td>
             <td class="tar">Rp {{ number_format($it->price,0,',','.') }}</td>
+            <td class="tar">Rp {{ number_format($it->weight * $it->price,0,',','.') }}</td>
             <td>{{ $it->status }}</td>
+            <td>
+              <form action="{{ route('transaction.update', $it->id) }}" method="POST" style="display:flex; gap:6px; align-items:center;">
+                @csrf
+                @method('PUT')
+                <select name="status" class="input">
+                  <option value="ON PROCESS" {{ $it->status=='ON PROCESS' ? 'selected' : '' }}>ON PROCESS</option>
+                  <option value="COMPLETED" {{ $it->status=='COMPLETED' ? 'selected' : '' }}>COMPLETED</option>
+                </select>
+                <button type="submit" class="btn btn-sm btn-primary">Update</button>
+              </form>
+            </td>
           </tr>
         @empty
-          <tr><td colspan="8" class="muted">Tidak ada service.</td></tr>
+          <tr><td colspan="10" class="muted">Tidak ada service.</td></tr>
         @endforelse
       </tbody>
     </table>

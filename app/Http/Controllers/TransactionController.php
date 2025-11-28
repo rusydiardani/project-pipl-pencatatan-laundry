@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class TransactionController extends Controller
 {
@@ -27,7 +28,7 @@ class TransactionController extends Controller
         'items.*.product_id' => 'required|integer',
         'items.*.product_name' => 'required|string',
         'items.*.product_type' => 'required|in:service,med',
-        'items.*.weight' => 'required|numeric|min:1',
+        'items.*.weight' => 'required|numeric|min:0.1',
         'items.*.price' => 'required|numeric|min:0',
         // 'items.*.duration' => 'nullable|string',
 
@@ -35,14 +36,14 @@ class TransactionController extends Controller
         'items.*.scheduled_time' => 'nullable',
         // 'items.*.staff_nik' => 'required|string',
         // 'items.*.location' => 'required|string',
-        'items.*.status' => 'nullable|in:NEW,COMPLETED',
+        'items.*.status' => 'nullable|in:ON PROCESS,COMPLETED',
     ]);
 
     // Jadwal bersifat opsional untuk service, dan diabaikan untuk med
 
     // Generate ref & created_by di server
     $ref  = 'TX-' . now()->format('YmdHis') . rand(100, 999);
-    $user = auth()->user()->username ?? 'system';
+    $user = Auth::user()?->username ?? 'system';
 
     foreach ($validated['items'] as $item) {
         Transaction::create([
@@ -69,7 +70,7 @@ class TransactionController extends Controller
             // 'staff_nik'         => $item['staff_nik'],
             // 'location'          => $item['location'],
 
-            'status'            => $item['status'] ?? 'NEW',
+            'status'            => $item['status'] ?? 'ON PROCESS',
         ]);
     }
 
@@ -89,11 +90,15 @@ class TransactionController extends Controller
             // 'age' => 'nullable|integer|min:0|max:120',
             // 'occupation' => 'nullable|string',
             // 'sex' => 'nullable|in:M,F',
-            'status' => 'in:NEW,COMPLETED'
+            'status' => 'in:ON PROCESS,COMPLETED'
         ]);
 
         $transaction->update($data);
-        return response()->json($transaction);
+        if ($request->wantsJson()) {
+            return response()->json($transaction);
+        }
+        return redirect()->route('transactions.detail', $transaction->ref_no)
+            ->with('success', 'Status transaksi berhasil diperbarui.');
     }
 
     public function destroy(Transaction $transaction)
@@ -111,14 +116,15 @@ class TransactionController extends Controller
     // Baseline query: kita ringkas per ref_no
     $query = \App\Models\Transaction::select(
         'ref_no',
-        \DB::raw('MIN(created_at) as created_at'),
-        \DB::raw('MIN(created_by) as created_by'),
-        \DB::raw('MIN(client_name) as client_name'),
-        \DB::raw('SUM(weight * price) as total'),
-        \DB::raw('COUNT(*) as items_count')
+        DB::raw('MIN(created_at) as created_at'),
+        DB::raw('MIN(created_by) as created_by'),
+        DB::raw('MIN(client_name) as client_name'),
+        DB::raw('SUM(weight * price) as total'),
+        DB::raw('COUNT(*) as items_count'),
+        DB::raw("SUM(CASE WHEN status = 'ON PROCESS' THEN 1 ELSE 0 END) as on_process_count")
     )
     ->groupBy('ref_no')
-    ->orderBy(\DB::raw('MIN(created_at)'), 'desc');
+    ->orderBy(DB::raw('MIN(created_at)'), 'desc');
 
     // Jika ada search, tambahkan filter (by ref_no OR client_name)
     if ($search !== '') {
@@ -259,5 +265,3 @@ public function destroyByRef(string $ref_no)
 
 
 }
-
-
