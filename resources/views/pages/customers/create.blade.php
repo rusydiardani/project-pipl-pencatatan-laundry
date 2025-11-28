@@ -2,68 +2,94 @@
 
 @section('content')
 <div class="container-fluid px-4">
-    <h1 class="mt-4">Tambah Pelanggan</h1>
-    <ol class="breadcrumb mb-4">
-        <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Dashboard</a></li>
-        <li class="breadcrumb-item"><a href="{{ route('customers.index') }}">Pelanggan</a></li>
-        <li class="breadcrumb-item active">Tambah</li>
-    </ol>
-
-    <div class="card mb-4">
-        <div class="card-header">
-            <i class="fas fa-user-plus me-1"></i>
-            Form Pelanggan Baru
+    <!-- Header -->
+    <div style="display:flex; justify-content:space-between; align-items:center; margin:2rem 0 1.5rem;">
+        <div>
+            <h1 style="font-size:28px; font-weight:700; margin:0 0 0.375rem; color:var(--gray-900); letter-spacing:-0.3px;">
+                Tambah Pelanggan
+            </h1>
+            <p style="color:var(--text-secondary); margin:0; font-size:14px; font-weight:500;">
+                Tambahkan pelanggan baru ke database
+            </p>
         </div>
-        <div class="card-body">
+    </div>
+
+    <!-- Form Card -->
+    <div class="card" style="box-shadow:var(--shadow-sm); border-radius:var(--radius-lg); border:1px solid var(--border); max-width:800px;">
+        <div class="card-header" style="background:white; border-bottom:1px solid var(--border); border-radius:var(--radius-lg) var(--radius-lg) 0 0; padding:1.25rem 1.5rem;">
+            <div style="display:flex; align-items:center; gap:0.75rem;">
+                <div style="width:36px; height:36px; background:var(--gray-50); border-radius:var(--radius); display:grid; place-items:center;">
+                    <i class="fas fa-user-plus" style="font-size:16px; color:var(--gray-600);"></i>
+                </div>
+                <span style="font-weight:700; color:var(--gray-900); font-size:15px;">Form Pelanggan Baru</span>
+            </div>
+        </div>
+        <div class="card-body" style="padding:1.5rem;">
             <form action="{{ route('customers.store') }}" method="POST">
                 @csrf
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        <label for="name" class="form-label">Nama Lengkap <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control @error('name') is-invalid @enderror" id="name" name="name" value="{{ old('name') }}" required>
+                <div class="row" style="margin-bottom:1.25rem;">
+                    <div class="col-md-6" style="margin-bottom:1.25rem;">
+                        <label for="name" style="display:block; font-size:13px; font-weight:600; color:var(--gray-700); margin-bottom:0.5rem;">
+                            Nama Lengkap <span style="color:var(--danger);">*</span>
+                        </label>
+                        <input type="text" class="input @error('name') is-invalid @enderror" id="name" name="name" value="{{ old('name') }}" required style="width:100%;">
                         @error('name')
-                            <div class="invalid-feedback">{{ $message }}</div>
+                            <div style="color:var(--danger); font-size:12px; margin-top:0.25rem;">{{ $message }}</div>
                         @enderror
                     </div>
-                    <div class="col-md-6">
-                        <label for="phone" class="form-label">No. HP (WhatsApp) <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control @error('phone') is-invalid @enderror" id="phone" name="phone" value="{{ old('phone') }}" required>
+                    <div class="col-md-6" style="margin-bottom:1.25rem;">
+                        <label for="phone" style="display:block; font-size:13px; font-weight:600; color:var(--gray-700); margin-bottom:0.5rem;">
+                            No. HP (WhatsApp) <span style="color:var(--danger);">*</span>
+                        </label>
+                        <input type="text" class="input @error('phone') is-invalid @enderror" id="phone" name="phone" value="{{ old('phone') }}" required style="width:100%;">
                         @error('phone')
-                            <div class="invalid-feedback">{{ $message }}</div>
+                            <div style="color:var(--danger); font-size:12px; margin-top:0.25rem;">{{ $message }}</div>
                         @enderror
                     </div>
                 </div>
 
-                <div class="mb-3">
-                    <label for="email" class="form-label">Email (Opsional)</label>
-                    <input type="email" class="form-control @error('email') is-invalid @enderror" id="email" name="email" value="{{ old('email') }}">
+                <div style="margin-bottom:1.25rem;">
+                    <label for="email" style="display:block; font-size:13px; font-weight:600; color:var(--gray-700); margin-bottom:0.5rem;">
+                        Email (Opsional)
+                    </label>
+                    <input type="email" class="input @error('email') is-invalid @enderror" id="email" name="email" value="{{ old('email') }}" style="width:100%;">
                     @error('email')
-                        <div class="invalid-feedback">{{ $message }}</div>
+                        <div style="color:var(--danger); font-size:12px; margin-top:0.25rem;">{{ $message }}</div>
                     @enderror
                 </div>
 
-                <div class="mb-3">
-                    <label for="address" class="form-label">Alamat (Opsional)</label>
-                    <textarea class="form-control @error('address') is-invalid @enderror" id="address" name="address" rows="3">{{ old('address') }}</textarea>
+                <div style="margin-bottom:1.25rem;">
+                    <label for="address" style="display:block; font-size:13px; font-weight:600; color:var(--gray-700); margin-bottom:0.5rem;">
+                        Alamat (Opsional)
+                    </label>
+                    <textarea class="input @error('address') is-invalid @enderror" id="address" name="address" rows="3" style="width:100%; min-height:80px; padding:0.75rem 1rem;">{{ old('address') }}</textarea>
                     @error('address')
-                        <div class="invalid-feedback">{{ $message }}</div>
+                        <div style="color:var(--danger); font-size:12px; margin-top:0.25rem;">{{ $message }}</div>
                     @enderror
                 </div>
 
-                <div class="mb-3">
-                    <label for="notes" class="form-label">Catatan Tambahan (Opsional)</label>
-                    <textarea class="form-control @error('notes') is-invalid @enderror" id="notes" name="notes" rows="2">{{ old('notes') }}</textarea>
+                <div style="margin-bottom:1.5rem;">
+                    <label for="notes" style="display:block; font-size:13px; font-weight:600; color:var(--gray-700); margin-bottom:0.5rem;">
+                        Catatan Tambahan (Opsional)
+                    </label>
+                    <textarea class="input @error('notes') is-invalid @enderror" id="notes" name="notes" rows="2" style="width:100%; min-height:60px; padding:0.75rem 1rem;">{{ old('notes') }}</textarea>
                     @error('notes')
-                        <div class="invalid-feedback">{{ $message }}</div>
+                        <div style="color:var(--danger); font-size:12px; margin-top:0.25rem;">{{ $message }}</div>
                     @enderror
                 </div>
 
-                <div class="d-flex justify-content-between">
-                    <a href="{{ route('customers.index') }}" class="btn btn-secondary">Kembali</a>
-                    <button type="submit" class="btn btn-primary">Simpan Pelanggan</button>
+                <div style="display:flex; justify-content:space-between; padding-top:1rem; border-top:1px solid var(--border);">
+                    <a href="{{ route('customers.index') }}" class="btn" style="height:40px; padding:0 1.5rem; background:var(--gray-100); border:1px solid var(--border);">
+                        <i class="fas fa-arrow-left"></i> Kembali
+                    </a>
+                    <button type="submit" class="btn btn-primary" style="height:40px; padding:0 1.5rem;">
+                        <i class="fas fa-save"></i> Simpan Pelanggan
+                    </button>
                 </div>
             </form>
         </div>
     </div>
 </div>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 @endsection
