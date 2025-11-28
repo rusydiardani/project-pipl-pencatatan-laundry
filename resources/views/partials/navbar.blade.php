@@ -1,6 +1,6 @@
 <nav class="nav">
   <div class="nav-left">
-    <a class="nav-brand" href="{{ route('draft.page') }}">Draft Transaksi</a>
+    <a class="nav-brand" href="{{ route('draft.page') }}">Home</a>
     <a class="nav-link" href="{{ route('list.page') }}">List Transaksi</a>
     <a class="nav-link" href="{{ route('buat.page') }}">Buat Transaksi</a>
 
