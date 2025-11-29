@@ -2,633 +2,427 @@
 @section('title', 'Buat Transaksi')
 
 @section('content')
-<section class="buat-wrap">
-  <div class="layout-34">
-    {{-- ¾: FORM TRANSAKSI --}}
-    <div class="col-transaksi">
-      <div class="tab-bar">
-        <div id="tab-container" class="tabs">
-          <button class="tab active" data-tab="1">Transaksi 1</button>
+<div class="container-fluid px-4">
+    <!-- Header -->
+    <div style="display:flex; justify-content:space-between; align-items:center; margin:2rem 0 1.5rem;">
+        <div>
+            <h1 style="font-size:28px; font-weight:700; margin:0 0 0.375rem; color:var(--gray-900); letter-spacing:-0.3px;">
+                Buat Transaksi Baru
+            </h1>
+            <p style="color:var(--text-secondary); margin:0; font-size:14px; font-weight:500;">
+                Tambahkan transaksi dengan multi-tab untuk efisiensi
+            </p>
         </div>
-        <div class="tab-actions">
-          <button class="btn btn-sm btn-success" id="btn-add-tab">+ Tambah Tab</button>
-          <button class="btn btn-sm btn-danger" id="btn-remove-tab">− Hapus Tab</button>
+        <div>
+            <a href="{{ route('list.page') }}" class="btn" style="height:40px; padding:0 1.5rem; background:var(--gray-100); border:1px solid var(--border);">
+                <i class="fas fa-arrow-left"></i> Kembali ke List
+            </a>
         </div>
-      </div>
-
-      <div id="tab-contents">
-        {{-- TEMPLATE TAB #1 --}}
-        <div class="tab-content active" data-tab="1">
-          <div class="transaksi-form">
-            {{-- Client --}}
-            <div class="grid-2">
-              <div class="form-row">
-                <label>Ref No</label>
-                <input type="text" class="input ref_no" placeholder="TX-XXXXXX (readonly)" readonly>
-              </div> 
-            </div>
-            <div class="grid-2">
-            <div class="form-row">
-                <label>Created By</label>
-                <input type="text" class="input created_by" value="{{ auth()->user()->username ?? 'Admin' }}" readonly>
-              </div>
-            </div>
-            <div class="grid-2">
-              <div class="form-row">
-                <label>Nama Client</label>
-                <div class="client-container" style="position:relative;">
-                  <input type="text" class="input client_name client-search" placeholder="Ketik nama pelanggan..." autocomplete="off">
-                  <input type="hidden" class="client_id">
-                  <div class="client-dropdown-list" style="position:absolute; top:100%; left:0; width:100%; max-height:200px; overflow-y:auto; background:#fff; border:1px solid #ccc; z-index:100; display:none; border-radius:4px;"></div>
-                </div>
-              </div>
-              <!-- <div class="form-row">
-                <label>Jenis Kelamin</label>
-                <select class="input sex">
-                  <option value="">Pilih</option>
-                  <option value="M">Pria</option>
-                  <option value="F">Wanita</option>
-                </select>
-              </div> -->
-            </div>
-            <!-- <div class="grid-2">
-              <div class="form-row">
-                <label>Usia</label>
-                <input type="number" class="input age" min="0" max="120" placeholder="Usia">
-              </div>
-              <div class="form-row">
-                <label>Pekerjaan</label>
-                <input type="text" class="input occupation" placeholder="Pekerjaan">
-              </div>
-            </div> -->
-
-            <hr>
-
-            {{-- Produk --}}
-            <div class="produk-area">
-              <div class="grid-2">
-                <div class="form-row product-container">
-                  <label>Nama Jasa</label>
-                  <input type="text" class="input product-search" placeholder="Ketik nama produk...">
-                  <div class="dropdown-list"></div>
-                  <input type="hidden" class="product_id">
-                  <input type="hidden" class="product_type">
-                </div>
-              </div>
-              <div class="grid-2">
-                <div class="form-row">
-                  <label>Berat</label>
-                  <input type="number" class="input weight" step="0.1" min="0.1" value="1">
-                </div>
-              </div>
-              <div class="grid-2">
-                <div class="form-row">
-                  <label>Price (Rupiah)</label>
-                  <input type="number" class="input price" min="0" placeholder="Otomatis" readonly>
-                </div>
-                <div class="form-row">
-                  <label>Scheduled Date</label>
-                  <input type="date" class="input scheduled_date" disabled>
-                </div>
-              </div>
-              <div class="grid-2">
-                <div class="form-row">
-                  <label>Scheduled Time</label>
-                  <input type="time" class="input scheduled_time" disabled>
-                </div>
-                <!-- <div class="form-row">
-                  <label>Staff NIK</label>
-                  <select class="input staff_nik">
-                    <option selected disabled>Pilih Staff</option>
-                    @foreach(\App\Models\Staff::all() as $s)
-                      <option value="{{ $s->nik }}" data-location="{{ $s->location }}">{{ $s->name }} ({{ $s->location }})</option>
-                    @endforeach
-                  </select>
-                </div> -->
-              </div>
-              <div class="grid-2">
-                <!-- <div class="form-row">
-                  <label>Location</label>
-                  <input type="text" class="input location" placeholder="Otomatis" readonly>
-                </div> -->
-                
-              </div>
-              <button type="button" class="btn btn-sm btn-primary btn-tambah-ke-ringkasan">Tambah ke Ringkasan</button>
-            </div>
-
-            {{-- RINGKASAN PER TAB --}}
-            <section class="summary mt-3">
-              <div class="table-wrap">
-                <table class="table">
-                  <thead>
-                    <tr>
-                      <th>Jasa</th>
-                      <th>Berat</th>
-                      <th>Harga</th>
-                      <th>Subtotal</th>
-                      <!-- <th>Staff</th>
-                      <th>Lokasi</th>
-                      <th>Tanggal</th>
-                      <th>Jam</th> -->
-                      <th></th>
-                    </tr>
-                  </thead>
-                  <tbody class="sum-body">
-                    <tr><td colspan="9" class="muted">Belum ada item.</td></tr>
-                  </tbody>
-                  <tfoot>
-                    <tr>
-                      <td colspan="3" class="tar strong">Total :</td>
-                      <td class="tar strong sum-total">Rp. 0</td>
-                      <td colspan="5"></td>
-                    </tr>
-                  </tfoot>
-                </table>
-              </div>
-            </section>
-
-          </div>
-        </div>
-      </div>
     </div>
 
-    <!-- {{-- ¼: REKOMENDASI --}} -->
-   
-  </div>
-</section>
+    <!-- Tab Bar -->
+    <div class="card" style="box-shadow:var(--shadow-sm); border-radius:var(--radius-lg) var(--radius-lg) 0 0; border:1px solid var(--border); border-bottom:none; padding:1rem 1.5rem; background:var(--gray-50);">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div id="tab-container" style="display:flex; gap:0.5rem; flex:1;"></div>
+            <div style="display:flex; gap:0.5rem;">
+                <button class="btn btn-sm btn-success" id="btn-add-tab" style="height:36px; padding:0 1rem;">
+                    <i class="fas fa-plus"></i> Tab Baru
+                </button>
+                <button class="btn btn-sm btn-danger" id="btn-remove-tab" style="height:36px; padding:0 1rem;">
+                    <i class="fas fa-times"></i> Hapus Tab
+                </button>
+            </div>
+        </div>
+    </div>
 
-<div class="actions" style="margin-top:18px;">
-  <a href="{{ route('draft.page') }}" class="btn btn-danger">Batalkan</a>
-  <button class="btn btn-primary" id="btn-proses">Proses Transaksi</button>
+    <!-- Tab Contents Container -->
+    <div id="tab-contents" class="card" style="box-shadow:var(--shadow-sm); border-radius:0 0 var(--radius-lg) var(--radius-lg); border:1px solid var(--border); border-top:none; padding:2rem; background:white; min-height:600px;">
+        <!-- Tabs will be inserted here -->
+    </div>
+
+    <!-- Submit Actions -->
+    <div style="display:flex; justify-content:space-between; margin-top:1.5rem; padding-top:1.5rem; border-top:1px solid var(--border);">
+        <a href="{{ route('list.page') }}" class="btn" style="height:48px; padding:0 2rem; background:var(--gray-100); border:1px solid var(--border);">
+            <i class="fas fa-times"></i> Batal
+        </a>
+        <button class="btn btn-primary" id="btn-proses" style="height:48px; padding:0 2.5rem; font-size:16px;">
+            <i class="fas fa-check-circle"></i> Proses Semua Transaksi
+        </button>
+    </div>
 </div>
 
-  // =============== CUSTOMER SEARCH ===================
-  function attachClientSearch(wrapper){
-    const input = wrapper.querySelector('.client-search');
-    const container = wrapper.querySelector('.client-container');
-    const list = wrapper.querySelector('.client-dropdown-list');
-    const idInput = wrapper.querySelector('.client_id');
+<!-- Template for Tab Content (Hidden) -->
+<template id="tab-template">
+    <div class="tab-content" style="display:none;">
+        <!-- Client Info -->
+        <div style="background:var(--gray-50); border-radius:var(--radius-lg); padding:1.5rem; margin-bottom:1.5rem;">
+            <h3 style="font-size:16px; font-weight:700; margin:0 0 1rem; color:var(--gray-900);">
+                <i class="fas fa-user" style="color:var(--primary);"></i> Informasi Pelanggan
+            </h3>
+            <div class="row">
+                <div class="col-md-4" style="margin-bottom:1rem;">
+                    <label style="display:block; font-size:13px; font-weight:600; color:var(--gray-700); margin-bottom:0.5rem;">Ref No</label>
+                    <input type="text" class="input ref_no" placeholder="Auto-generate" readonly style="width:100%; background:var(--gray-100);">
+                </div>
+                <div class="col-md-4" style="margin-bottom:1rem;">
+                    <label style="display:block; font-size:13px; font-weight:600; color:var(--gray-700); margin-bottom:0.5rem;">Created By</label>
+                    <input type="text" class="input created_by" value="{{ auth()->user()->username ?? 'Admin' }}" readonly style="width:100%; background:var(--gray-100);">
+                </div>
+                <div class="col-md-4" style="margin-bottom:1rem;">
+                    <label style="display:block; font-size:13px; font-weight:600; color:var(--gray-700); margin-bottom:0.5rem;">Nama Pelanggan *</label>
+                    <div class="client-container" style="position:relative;">
+                        <input type="text" class="input client-search" placeholder="Ketik nama pelanggan..." autocomplete="off" style="width:100%;">
+                        <input type="hidden" class="client_id">
+                        <div class="client-dropdown" style="position:absolute; top:calc(100% + 4px); left:0; width:100%; max-height:250px; overflow-y:auto; background:white; border:1px solid var(--border); border-radius:var(--radius-md); z-index:1000; display:none; box-shadow:var(--shadow-lg);"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-    // reset
-    list.innerHTML=''; list.style.display='none';
+        <!-- Service Selection -->
+        <div style="background:white; border:1px solid var(--border); border-radius:var(--radius-lg); padding:1.5rem; margin-bottom:1.5rem;">
+            <h3 style="font-size:16px; font-weight:700; margin:0 0 1rem; color:var(--gray-900);">
+                <i class="fas fa-concierge-bell" style="color:var(--success);"></i> Pilih Jasa/Service
+            </h3>
+            <div class="row">
+                <div class="col-md-6" style="margin-bottom:1rem;">
+                    <label style="display:block; font-size:13px; font-weight:600; color:var(--gray-700); margin-bottom:0.5rem;">Nama Jasa *</label>
+                    <select class="input product-select" style="width:100%;">
+                        <option value="" disabled selected>-- Pilih Jasa --</option>
+                        @foreach(\App\Models\Service::where('available', true)->get() as $service)
+                            <option value="{{ $service->id }}" data-price="{{ $service->price }}" data-type="service">
+                                {{ $service->name }} - Rp {{ number_format($service->price, 0, ',', '.') }}
+                            </option>
+                        @endforeach
+                    </select>
+                    <input type="hidden" class="product_id">
+                    <input type="hidden" class="product_type">
+                </div>
+                <div class="col-md-2" style="margin-bottom:1rem;">
+                    <label style="display:block; font-size:13px; font-weight:600; color:var(--gray-700); margin-bottom:0.5rem;">Berat (Kg) *</label>
+                    <input type="number" class="input weight" step="0.1" min="0.1" value="1" style="width:100%;">
+                </div>
+                <div class="col-md-2" style="margin-bottom:1rem;">
+                    <label style="display:block; font-size:13px; font-weight:600; color:var(--gray-700); margin-bottom:0.5rem;">Harga/Kg</label>
+                    <input type="number" class="input price" readonly style="width:100%; background:var(--gray-100);">
+                </div>
+                <div class="col-md-2" style="margin-bottom:1rem;">
+                    <label style="display:block; font-size:13px; font-weight:600; color:var(--gray-700); margin-bottom:0.5rem;">Subtotal</label>
+                    <input type="number" class="input subtotal" readonly style="width:100%; background:var(--gray-100); font-weight:700; color:var(--success);">
+                </div>
+            </div>
+            <div class="row schedule-fields" style="display:none;">
+                <div class="col-md-6" style="margin-bottom:1rem;">
+                    <label style="display:block; font-size:13px; font-weight:600; color:var(--gray-700); margin-bottom:0.5rem;">Tanggal Jadwal *</label>
+                    <input type="date" class="input scheduled_date" style="width:100%;">
+                </div>
+                <div class="col-md-6" style="margin-bottom:1rem;">
+                    <label style="display:block; font-size:13px; font-weight:600; color:var(--gray-700); margin-bottom:0.5rem;">Jam Jadwal *</label>
+                    <input type="time" class="input scheduled_time" style="width:100%;">
+                </div>
+            </div>
+            <button type="button" class="btn btn-primary btn-add-item" style="width:100%; height:42px; margin-top:0.5rem;">
+                <i class="fas fa-plus-circle"></i> Tambah ke Ringkasan
+            </button>
+        </div>
 
-    input.addEventListener('input', async ()=>{
-      const q = input.value.trim(); 
-      if(q.length < 2){ list.style.display='none'; return; }
-      
-      try{
-        const res = await fetch(`{{ route('customers.index') }}?search=${encodeURIComponent(q)}`);
-        // Note: customers.index returns HTML view by default. 
-        // We need to ensure it returns JSON if requested via AJAX or create specific API.
-        // For now, let's assume we modify controller to return JSON if ajax.
-        // OR better, create a specific search route for customers API-like.
-        // Let's use a specific route or modify controller index to check wantsJson().
-        
-        // Let's try to fetch from a new route or modify controller.
-        // Since I haven't modified controller to return JSON, this might fail if I don't.
-        // I will modify CustomerController@index to return JSON if request->wantsJson().
-        
-        const text = await res.text();
-        // Check if it's JSON
-        try {
-            const data = JSON.parse(text);
-             // If data is wrapped in pagination or something, adjust.
-             // Assuming controller returns collection or array.
-             
-             list.innerHTML = '';
-             // If data.data exists (pagination), use it.
-             const customers = data.data ? data.data : data;
-             
-             if(Array.isArray(customers)){
-                 customers.forEach(c=>{
-                   const opt = document.createElement('div');
-                   opt.className = 'dropdown-option';
-                   opt.style.padding = '8px';
-                   opt.style.cursor = 'pointer';
-                   opt.style.borderBottom = '1px solid #eee';
-                   opt.innerHTML = `<strong>${c.name}</strong><br><small>${c.phone}</small>`;
-                   opt.dataset.id = c.id;
-                   opt.dataset.name = c.name;
-                   opt.dataset.phone = c.phone;
-                   
-                   opt.addEventListener('click', ()=>{
-                     input.value = c.name;
-                     idInput.value = c.id;
-                     list.style.display = 'none';
-                   });
-                   
-                   list.appendChild(opt);
-                 });
-                 list.style.display = customers.length ? 'block' : 'none';
-             }
-        } catch(e) {
-            // Not JSON, maybe HTML?
-            console.error('Response not JSON', e);
-        }
-      }catch(err){ console.error(err); }
-    });
+        <!-- Summary Table -->
+        <div style="background:white; border:1px solid var(--border); border-radius:var(--radius-lg); padding:1.5rem;">
+            <h3 style="font-size:16px; font-weight:700; margin:0 0 1rem; color:var(--gray-900);">
+                <i class="fas fa-receipt" style="color:var(--warning);"></i> Ringkasan Transaksi
+            </h3>
+            <div class="table-responsive">
+                <table class="table" style="margin:0;">
+                    <thead style="background:var(--gray-50);">
+                        <tr>
+                            <th style="padding:0.875rem; font-size:12px; text-transform:uppercase; color:var(--gray-600);">Jasa</th>
+                            <th style="padding:0.875rem; font-size:12px; text-transform:uppercase; color:var(--gray-600);">Berat</th>
+                            <th style="padding:0.875rem; font-size:12px; text-transform:uppercase; color:var(--gray-600);">Harga</th>
+                            <th style="padding:0.875rem; font-size:12px; text-transform:uppercase; color:var(--gray-600);">Subtotal</th>
+                            <th style="padding:0.875rem; font-size:12px; text-transform:uppercase; color:var(--gray-600); width:80px;">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody class="summary-body">
+                        <tr class="empty-row">
+                            <td colspan="5" style="padding:2rem; text-align:center; color:var(--text-secondary);">
+                                <i class="fas fa-inbox" style="font-size:36px; opacity:0.3; display:block; margin-bottom:0.5rem;"></i>
+                                Belum ada item. Tambahkan jasa di atas.
+                            </td>
+                        </tr>
+                    </tbody>
+                    <tfoot style="background:var(--gray-50); font-weight:700;">
+                        <tr>
+                            <td colspan="3" style="padding:1rem; text-align:right; font-size:16px;">TOTAL:</td>
+                            <td class="total-amount" style="padding:1rem; color:var(--success); font-size:18px;">Rp 0</td>
+                            <td></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+</template>
 
-    document.addEventListener('click', (e)=>{
-      if(!container.contains(e.target)) list.style.display='none';
-    });
-  }
-  
-  // Attach to initial tab
-  attachClientSearch(document.querySelector('.tab-content.active'));
-  
-  // Update btnAdd listener to attach to new tabs
-  // ... (need to update btnAdd listener logic above) ...
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-</script>
 <script>
-document.addEventListener('DOMContentLoaded', ()=>{
-  let tabCount = 1;
-  const tabs     = document.getElementById('tab-container');
-  const contents = document.getElementById('tab-contents');
-  const btnAdd   = document.getElementById('btn-add-tab');
-  const btnRem   = document.getElementById('btn-remove-tab');
+document.addEventListener('DOMContentLoaded', () => {
+    let tabCounter = 0;
+    const tabsContainer = document.getElementById('tab-container');
+    const contentsContainer = document.getElementById('tab-contents');
+    const template = document.getElementById('tab-template');
 
-  function activateTab(tabBtn){
-    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-    document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
-    tabBtn.classList.add('active');
-    document.querySelector(`.tab-content[data-tab="${tabBtn.dataset.tab}"]`).classList.add('active');
-  }
+    // Create initial tab
+    createTab();
 
-  btnAdd.addEventListener('click', ()=>{
-    tabCount++;
-    const newTab = document.createElement('button');
-    newTab.className = 'tab';
-    newTab.dataset.tab = tabCount;
-    newTab.textContent = 'Transaksi ' + tabCount;
+    // Add Tab Button
+    document.getElementById('btn-add-tab').addEventListener('click', createTab);
 
-    const newContent = document.createElement('div');
-    newContent.className = 'tab-content';
-    newContent.dataset.tab = tabCount;
-    // clone isi tab #1
-    newContent.innerHTML = document.querySelector('.tab-content[data-tab="1"]').innerHTML;
-
-    tabs.appendChild(newTab);
-    contents.appendChild(newContent);
-
-    // bersihkan ringkasan & input produk di tab baru
-    const tbody = newContent.querySelector('.sum-body');
-    tbody.innerHTML = '<tr><td colspan="9" class="muted">Belum ada item.</td></tr>';
-    newContent.querySelector('.product-search').value = '';
-    newContent.querySelector('.product_id').value = '';
-    newContent.querySelector('.product_type').value = '';
-    newContent.querySelector('.weight').value = 1;
-    newContent.querySelector('.price').value = '';
-    newContent.querySelector('.scheduled_date').value = '';
-    newContent.querySelector('.scheduled_time').value = '';
-    
-    // Clean client inputs
-    newContent.querySelector('.client-search').value = '';
-    newContent.querySelector('.client_id').value = '';
-    
-    newContent.querySelector('.sum-total').textContent = 'Rp. 0';
-
-    activateTab(newTab);
-    initTabForm(newContent);
-    attachClientSearch(newContent); // Attach search to new tab
-  });
-
-  btnRem.addEventListener('click', ()=>{
-    const active = document.querySelector('.tab.active');
-    if(!active) return;
-    const id = active.dataset.tab;
-    const content = document.querySelector(`.tab-content[data-tab="${id}"]`);
-    if(tabs.children.length > 1){
-      active.remove();
-      content.remove();
-      activateTab(tabs.lastElementChild);
-    }else{
-      alert('Minimal harus ada satu tab transaksi!');
-    }
-  });
-
-  tabs.addEventListener('click', (e)=>{
-    if(e.target.classList.contains('tab')) activateTab(e.target);
-  });
-
-  function initTabForm(wrapper){
-    // lokasi auto dari staff
-    // const staffSelect = wrapper.querySelector('.staff_nik');
-    // staffSelect.addEventListener('change', e=>{
-    //   const opt = e.target.selectedOptions[0];
-    //   wrapper.querySelector('.location').value = opt?.dataset.location || '';
-    // });
-
-    attachProductSearch(wrapper);
-
-    // pastikan tidak dobel listener
-    const oldBtn = wrapper.querySelector('.btn-tambah-ke-ringkasan');
-    const newBtn = oldBtn.cloneNode(true);
-    oldBtn.replaceWith(newBtn);
-    newBtn.addEventListener('click', ()=>{
-  tambahKeRingkasan(wrapper);
-  if (typeof window.refreshRekom === 'function') {
-    window.refreshRekom();          // tab hasil clone pun auto refresh
-  }
-});
-  }
-
-  function attachProductSearch(wrapper){
-    const input  = wrapper.querySelector('.product-search');
-    const container = wrapper.querySelector('.product-container');
-    const list   = wrapper.querySelector('.dropdown-list');
-
-    // reset dropdown
-    list.innerHTML=''; list.style.display='none';
-
-    input.addEventListener('input', async ()=>{
-      const q = input.value.trim(); if(q.length < 2){ list.style.display='none'; return; }
-      try{
-        const res = await fetch(`{{ route('products.search') }}?q=${encodeURIComponent(q)}`);
-        const data = await res.json();
-        list.innerHTML = '';
-        data.forEach(p=>{
-          const opt = document.createElement('div');
-          opt.className = 'dropdown-option';
-          opt.textContent = `${p.name} - Rp${Number(p.price).toLocaleString('id-ID')}`;
-          opt.dataset.id = p.id;
-          opt.dataset.type = p.type;   // 'service' | 'med'
-          opt.dataset.price = p.price;
-          list.appendChild(opt);
-        });
-        list.style.display = data.length ? 'block' : 'none';
-      }catch(err){ console.error(err); }
-    });
-
-    list.addEventListener('click', e=>{
-      if(!e.target.classList.contains('dropdown-option')) return;
-
-      const { id, type, price } = e.target.dataset;
-      input.value = e.target.textContent.split(' - ')[0];
-      wrapper.querySelector('.product_id').value   = id;
-      wrapper.querySelector('.product_type').value = type;
-      wrapper.querySelector('.price').value        = price;
-
-      // toggle jadwal sesuai tipe
-      const dateEl = wrapper.querySelector('.scheduled_date');
-      const timeEl = wrapper.querySelector('.scheduled_time');
-      if (dateEl && timeEl) {
-        if (type === 'service') {
-          dateEl.removeAttribute('disabled');
-          timeEl.removeAttribute('disabled');
-        } else {
-          dateEl.value = '';
-          timeEl.value = '';
-          dateEl.setAttribute('disabled', 'disabled');
-          timeEl.setAttribute('disabled', 'disabled');
+    // Remove Tab Button  
+    document.getElementById('btn-remove-tab').addEventListener('click', () => {
+        if (tabCounter <= 1) {
+            alert('Minimal harus ada 1 tab!');
+            return;
         }
-      }
-      list.style.display = 'none';
-    });
-
-    document.addEventListener('click', (e)=>{
-      if(!container.contains(e.target)) list.style.display='none';
-    });
-  }
-
-  function tambahKeRingkasan(wrapper){
-    // ambil nilai awal
-    const nameEl   = wrapper.querySelector('.product-search');
-    const weightEl    = wrapper.querySelector('.weight');
-    const priceEl  = wrapper.querySelector('.price');
-    const idEl     = wrapper.querySelector('.product_id');
-    const typeEl   = wrapper.querySelector('.product_type');
-    const dateEl   = wrapper.querySelector('.scheduled_date');
-    const timeEl   = wrapper.querySelector('.scheduled_time');
-    
-    // const staffSel = wrapper.querySelector('.staff_nik');
-
-    const name        = (nameEl?.value || '').trim();
-    const weight         = parseFloat(weightEl?.value || '0') || 0;
-    const price       = parseFloat(priceEl?.value || '0') || 0;
-    const prodId      = parseInt(idEl?.value || '0', 10) || 0;
-    const prodTypeVal = (typeEl?.value || '').trim();
-    const dateVal     = (dateEl?.value || '').trim();
-    const timeVal     = (timeEl?.value || '').trim();
-
-    // const staffNik    = staffSel?.value || '';
-    // const staffName   = staffSel?.selectedOptions?.[0]?.text.split(' (')[0] || '-';
-    // const loc         = staffSel?.selectedOptions?.[0]?.dataset.location || '';
-
-    // Validasi FE
-    if (!name || !price || !prodId || !prodTypeVal){
-      alert('Lengkapi produk (pilih dari dropdown) dan harga.');
-      return;
-    }
-    // if (!staffNik){
-    //   alert('Pilih staff terlebih dahulu.');
-    //   return;
-    // }
-    if (prodTypeVal === 'service'){
-      if (!dateVal || !timeVal){
-        alert('Service wajib punya tanggal & jam.');
-        return;
-      }
-    } else { // med
-      if (dateVal || timeVal){
-        // alert('Produk MED tidak boleh memiliki tanggal/jam.');
-        // return;
-        // Optional: clear them just in case
-      }
-    }
-
-    const sub = weight * price;
-
-    const tbody = wrapper.querySelector('.sum-body');
-    if (tbody.querySelector('.muted')) tbody.innerHTML = '';
-
-    const tr = document.createElement('tr');
-    tr.dataset.productId   = String(prodId);
-    tr.dataset.productType = prodTypeVal;
-    tr.dataset.weight      = String(weight);
-
-    tr.innerHTML = `
-      <td>${name}</td>
-      <td>${weight}</td>
-      <td>Rp. ${price.toLocaleString('id-ID')}</td>
-      <td>Rp. ${sub.toLocaleString('id-ID')}</td>
-      <td>${dateVal}</td>
-      <td>${timeVal}</td>
-      <td><button type="button" class="btn-hapus-produk btn btn-sm btn-outline-danger">Hapus</button></td>
-    `;
-    tbody.appendChild(tr);
-
-    tr.querySelector('.btn-hapus-produk').addEventListener('click', ()=>{
-      tr.remove();
-      hitungTotal(wrapper);
-      if(!tbody.children.length){
-        tbody.innerHTML = '<tr><td colspan="9" class="muted">Belum ada item.</td></tr>';
-      }
-    });
-
-    if (typeof window.refreshRekom === 'function') {
-    window.refreshRekom();          // panggil refresher rekom setiap berhasil tambah
-  }
-
-    hitungTotal(wrapper);
-
-    // reset minimal
-    nameEl.value  = '';
-    idEl.value    = '';
-    typeEl.value  = '';
-    weightEl.value   = 1;
-    priceEl.value = '';
-    // date/time tetap mengikuti toggle produk berikutnya
-  }
-
-  function hitungTotal(wrapper){
-    let tot = 0;
-    wrapper.querySelectorAll('.sum-body tr').forEach(tr=>{
-      const subText = tr.cells[3]?.textContent || '';
-      const sub = parseInt(subText.replace(/[^\d]/g,'')) || 0;
-      tot += sub;
-    });
-    wrapper.querySelector('.sum-total').textContent = 'Rp. ' + tot.toLocaleString('id-ID');
-  }
-
-  // init tab pertama
-  initTabForm(document.querySelector('.tab-content.active'));
-  
-  // Attach search to initial tab
-  attachClientSearch(document.querySelector('.tab-content.active'));
-});
-
-// =============== PROSES TRANSAKSI (MULTI CLIENT) ===================
-document.getElementById('btn-proses').addEventListener('click', async ()=>{
-  const allTabs = document.querySelectorAll('.tab-content');
-  const allClients = [];
-
-  allTabs.forEach(tab=>{
-    const clientData = {
-      client_name: tab.querySelector('.client_name').value.trim(),
-      customer_id: tab.querySelector('.client_id').value || null,
-      // age: tab.querySelector('.age').value || null,
-      // occupation: tab.querySelector('.occupation').value.trim(),
-      // sex: tab.querySelector('.sex').value || null,
-      channel: 'Point Of Sale'
-    };
-
-    const items = [];
-  tab.querySelectorAll('.sum-body tr').forEach(tr=>{
-      if(tr.querySelector('.muted')) return;
-      const tds = tr.querySelectorAll('td');
-      items.push({
-        product_id: parseInt(tr.dataset.productId) || 0,
-        product_name: tds[0].textContent.trim(),
-        product_type: tr.dataset.productType || 'service',
-        weight: parseFloat(tr.dataset.weight || '0') || 1,
-        price: parseFloat(tds[2].textContent.replace(/[^\d]/g,'')) || 0,
-        // staff_nik: tds[4].dataset.nik || '',
-        // location: tds[5].textContent.trim(),
-        scheduled_date: tds[4].textContent.trim() || null,
-        scheduled_time: tds[5].textContent.trim() || null,
+        const activeTabs = document.querySelectorAll('.tab-btn');
+        const lastTab = activeTabs[activeTabs.length - 1];
+        const tabId = lastTab.dataset.tab;
         
-      });
+        lastTab.remove();
+        document.querySelector(`.tab-content[data-tab="${tabId}"]`).remove();
+        tabCounter--;
+        
+        // Activate previous tab
+        if (activeTabs.length > 1) {
+            activeTabs[activeTabs.length - 2].click();
+        }
     });
 
-    if(clientData.client_name && items.length > 0){
-      allClients.push({ ...clientData, items });
+    function createTab() {
+        tabCounter++;
+        const tabId = `tab-${tabCounter}`;
+
+        // Create tab button
+        const tabBtn = document.createElement('button');
+        tabBtn.className = 'tab-btn';
+        tabBtn.dataset.tab = tabId;
+        tabBtn.innerHTML = `<i class="fas fa-file-invoice"></i> Transaksi ${tabCounter}`;
+        tabBtn.style.cssText = 'padding:0.625rem 1.25rem; border:none; background:white; border-radius:var(--radius-md); cursor:pointer; font-weight:600; font-size:13px; color:var(--gray-700); transition:all 0.2s;';
+        
+        tabBtn.addEventListener('click', () => switchTab(tabId));
+        tabsContainer.appendChild(tabBtn);
+
+        // Create tab content from template
+        const content = template.content.cloneNode(true).querySelector('.tab-content');
+        content.dataset.tab = tabId;
+        contentsContainer.appendChild(content);
+
+        // Initialize autocomplete for this tab
+        initializeAutocomplete(content);
+
+        // Switch to new tab
+        switchTab(tabId);
     }
-  });
 
-  if(allClients.length === 0){
-    alert('Belum ada transaksi yang valid.');
-    return;
-  }
+    function switchTab(tabId) {
+        // Update buttons
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            if (btn.dataset.tab === tabId) {
+                btn.style.background = 'var(--primary)';
+                btn.style.color = 'white';
+                btn.style.boxShadow = 'var(--shadow-sm)';
+            } else {
+                btn.style.background = 'white';
+                btn.style.color = 'var(--gray-700)';
+                btn.style.boxShadow = 'none';
+            }
+        });
 
-  // kirim ke backend satu per satu
-  for(const c of allClients){
-    try{
-      const res = await fetch("{{ route('transactions.store') }}", {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRF-TOKEN': '{{ csrf_token() }}'
-        },
-        body: JSON.stringify(c)
-      });
-      const data = await res.json();
-
-      if(res.status === 422){
-        const msgs = Object.values(data.errors || {}).flat().join('\n');
-        alert('Validasi gagal pada salah satu tab:\n' + msgs);
-        return;
-      }
-
-      if(!data.success){
-        alert('Gagal menyimpan salah satu transaksi.');
-        return;
-      }
-    }catch(err){
-      console.error(err);
-      alert('Terjadi kesalahan server.');
-      return;
+        // Update content
+        document.querySelectorAll('.tab-content').forEach(content => {
+            content.style.display = content.dataset.tab === tabId ? 'block' : 'none';
+        });
     }
-  }
 
-  alert('Semua transaksi berhasil disimpan!');
-  window.location.href = "{{ route('list.page') }}";
+    function initializeAutocomplete(tabContent) {
+        // Customer Search
+        const clientInput = tabContent.querySelector('.client-search');
+        const clientDropdown = tabContent.querySelector('.client-dropdown');
+        const clientIdInput = tabContent.querySelector('.client_id');
+
+        clientInput.addEventListener('input', async (e) => {
+            const query = e.target.value.trim();
+            if (query.length < 2) {
+                clientDropdown.style.display = 'none';
+                return;
+            }
+
+            // For now, mock data - replace with actual API call
+            const mockCustomers = [
+                { id: 1, name: 'John Doe', phone: '08123456789' },
+                { id: 2, name: 'Jane Smith', phone: '08129876543' }
+            ].filter(c => c.name.toLowerCase().includes(query.toLowerCase()));
+
+            clientDropdown.innerHTML = mockCustomers.map(customer => `
+                <div class="dropdown-item" data-id="${customer.id}" data-name="${customer.name}" style="padding:0.75rem 1rem; cursor:pointer; border-bottom:1px solid var(--gray-100); transition:background 0.2s;" onmouseover="this.style.background='var(--gray-50)'" onmouseout="this.style.background='white'">
+                    <div style="font-weight:600; color:var(--gray-900); margin-bottom:0.25rem;">${customer.name}</div>
+                    <div style="font-size:12px; color:var(--text-secondary);">${customer.phone}</div>
+                </div>
+            `).join('');
+
+            clientDropdown.querySelectorAll('.dropdown-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    clientInput.value = item.dataset.name;
+                    clientIdInput.value = item.dataset.id;
+                    clientDropdown.style.display = 'none';
+                });
+            });
+
+            clientDropdown.style.display = mockCustomers.length ? 'block' : 'none';
+        });
+
+        // Service/Product Select
+        const productSelect = tabContent.querySelector('.product-select');
+        const productIdInput = tabContent.querySelector('.product_id');
+        const productTypeInput = tabContent.querySelector('.product_type');
+        const priceInput = tabContent.querySelector('.price');
+        const weightInput = tabContent.querySelector('.weight');
+        const subtotalInput = tabContent.querySelector('.subtotal');
+        const scheduleFields = tabContent.querySelector('.schedule-fields');
+
+        productSelect.addEventListener('change', (e) => {
+            const selectedOption = e.target.options[e.target.selectedIndex];
+            
+            if (!selectedOption.value) return;
+
+            const productId = selectedOption.value;
+            const price = selectedOption.dataset.price;
+            const type = selectedOption.dataset.type;
+
+            productIdInput.value = productId;
+            productTypeInput.value = type;
+            priceInput.value = price;
+
+            // Show schedule fields if service
+            if (type === 'service') {
+                scheduleFields.style.display = 'flex';
+            } else {
+                scheduleFields.style.display = 'none';
+            }
+
+            // Calculate subtotal
+            const weight = parseFloat(weightInput.value) || 1;
+            subtotalInput.value = (weight * parseFloat(price)).toFixed(0);
+        });
+
+        // Weight change recalculates subtotal
+        weightInput.addEventListener('input', () => {
+            const weight = parseFloat(weightInput.value) || 0;
+            const price = parseFloat(priceInput.value) || 0;
+            subtotalInput.value = (weight * price).toFixed(0);
+        });
+
+        // Add Item Button
+        const btnAddItem = tabContent.querySelector('.btn-add-item');
+        const summaryBody = tabContent.querySelector('.summary-body');
+        const totalAmount = tabContent.querySelector('.total-amount');
+        let items = [];
+
+        btnAddItem.addEventListener('click', () => {
+            const selectedOption = productSelect.options[productSelect.selectedIndex];
+            const productName = selectedOption ? selectedOption.text.split(' - ')[0] : '';
+            const productId = productIdInput.value;
+            const weight = parseFloat(weightInput.value);
+            const price = parseFloat(priceInput.value);
+            const subtotal = parseFloat(subtotalInput.value);
+
+            if (!productId || !productName) {
+                alert('Pilih jasa terlebih dahulu!');
+                return;
+            }
+
+            if (!weight || weight <= 0) {
+                alert('Berat harus lebih dari 0!');
+                return;
+            }
+
+            // Add to items array
+            items.push({ productName, productId, weight, price, subtotal });
+
+            // Re-render table
+            renderSummaryTable();
+
+            // Reset form
+            productSelect.value = '';
+            productIdInput.value = '';
+            productTypeInput.value = '';
+            priceInput.value = '';
+            weightInput.value = '1';
+            subtotalInput.value = '';
+            scheduleFields.style.display = 'none';
+        });
+
+        function renderSummaryTable() {
+            if (items.length === 0) {
+                summaryBody.innerHTML = `
+                    <tr class="empty-row">
+                        <td colspan="5" style="padding:2rem; text-align:center; color:var(--text-secondary);">
+                            <i class="fas fa-inbox" style="font-size:36px; opacity:0.3; display:block; margin-bottom:0.5rem;"></i>
+                            Belum ada item. Tambahkan jasa di atas.
+                        </td>
+                    </tr>
+                `;
+                totalAmount.textContent = 'Rp 0';
+                return;
+            }
+
+            summaryBody.innerHTML = items.map((item, index) => `
+                <tr>
+                    <td style="padding:0.875rem; font-weight:600;">${item.productName}</td>
+                    <td style="padding:0.875rem;">${item.weight} kg</td>
+                    <td style="padding:0.875rem;">Rp ${item.price.toLocaleString('id-ID')}</td>
+                    <td style="padding:0.875rem; font-weight:700; color:var(--success);">Rp ${item.subtotal.toLocaleString('id-ID')}</td>
+                    <td style="padding:0.875rem;">
+                        <button onclick="removeItem(${index})" class="btn btn-sm" style="height:32px; padding:0 0.75rem; background:var(--danger-pale); color:var(--danger); border:1px solid var(--danger);">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+
+            const total = items.reduce((sum, item) => sum + item.subtotal, 0);
+            totalAmount.textContent = `Rp ${total.toLocaleString('id-ID')}`;
+        }
+
+        // Make removeItem global for this tab
+        window.removeItem = (index) => {
+            items.splice(index, 1);
+            renderSummaryTable();
+        };
+    }
+
+    // Close dropdowns on outside click
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.client-container')) {
+            document.querySelectorAll('.client-dropdown').forEach(d => d.style.display = 'none');
+        }
+    });
+
+    // Process All Transactions
+    document.getElementById('btn-proses').addEventListener('click', () => {
+        alert('Proses transaksi - implementasi backend required');
+        // TODO: Collect all tab data and POST to server
+    });
 });
 </script>
 
 <style>
-.buat-wrap {
-  width: 100%;
-  display: flex;
-  justify-content: center; /* bantu atur posisi umum */
-  padding: 30px 0;
+.tab-btn {
+    transition: all 0.2s ease;
 }
-
-/* Tambah offset dari kiri supaya agak ke tengah */
-.layout-34 {
-  display: flex;
-  gap: 20px;
-  align-items: flex-start;
-  width: 100%;
-  max-width: 1200px; /* batasi lebar agar tidak melebar seluruh layar */
-  margin-left: 140px; /* inilah yang bikin agak ke tengah */
-}
-
-.col-transaksi {
-  flex: 0 0 75%;
-}
-
-.col-rekomendasi {
-  flex: 0 0 23%;
-  background: #fafafa;
-  padding: 15px;
-  border: 1px solid #e5e5e5;
-  border-radius: 6px;
-}
-/* Tab */
-.tab-bar{display:flex; justify-content:space-between; margin-bottom:15px;}
-.tabs{display:flex; gap:6px; flex-wrap:wrap;}
-.tab-actions{display:flex; gap:6px;}
-.tab{background:#f3f3f3; border:1px solid #ccc; padding:6px 12px; border-radius:4px; cursor:pointer;}
-.tab.active{background:#007bff; color:#fff; border-color:#007bff;}
-.tab-content{display:none;}
-.tab-content.active{display:block;}
-
-/* Produk */
-.product-container{position:relative;}
-.dropdown-list{position:absolute; top:100%; left:0; width:100%; max-height:180px; overflow-y:auto; background:#fff; border:1px solid #ccc; z-index:50; display:none; border-radius:4px;}
-.dropdown-option{padding:6px 8px; cursor:pointer;}
-.dropdown-option:hover{background:#e7f1ff;}
-
-/* Summary */
-.summary{margin-top:20px;}
-.table .tar{text-align:right}
-.table .strong{font-weight:600}
-.muted{color:#888}
-@media (min-width: 1200px) {
-  .layout-34 {
-    margin-left: 12%; /* geser kanan secara proporsional */
-  }
+.tab-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md) !important;
 }
 </style>
 @endsection

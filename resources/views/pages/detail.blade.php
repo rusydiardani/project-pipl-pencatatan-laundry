@@ -2,88 +2,295 @@
 @section('title','Detail Transaksi')
 
 @section('content')
-<section class="draft">
-  <h1 class="page-title">Detail Transaksi</h1>
-  <p class="page-sub">
-    Ringkasan transaksi <span id="det-id">#{{ $header->ref_no }}</span> •
-    <span id="det-date">{{ \Carbon\Carbon::parse($header->created_at)->format('d M Y H:i') }}</span> •
-    Client: <strong id="det-client">{{ $header->client_name }}</strong> •
-    Created by: <strong id="det-by">{{ $header->created_by }}</strong>
-  </p>
-</section>
+<div class="container-fluid px-4">
+    <!-- Company Header / Receipt Header -->
+    <div style="background:white; border:1px solid var(--border); border-radius:var(--radius-lg); padding:1.5rem 2rem; margin:2rem 0 1.5rem; text-align:center; box-shadow:var(--shadow-sm);">
+        <h2 style="font-size:24px; font-weight:700; margin:0 0 0.5rem; color:var(--primary); letter-spacing:0.5px;">E.M. LAUNDRY</h2>
+        <div style="color:var(--text-secondary); font-size:13px; line-height:1.6;">
+            <div>Jalan Bandara, Pinang Kencana, Tanjungpinang Timur</div>
+            {{-- <div style="margin-top:0.25rem;">Telp: 0812-XXXX-XXXX</div> --}}
+        </div>
+        <div style="height:1px; background:var(--border); margin:1rem 0 0.5rem;"></div>
+        <div style="font-size:11px; color:var(--text-secondary); font-weight:600; text-transform:uppercase; letter-spacing:1px;">Invoice / Resi</div>
+    </div>
 
-<section class="summary" id="detail-root">
-  @if(session('success'))
-    <div class="alert alert-success" style="margin-bottom:12px;">{{ session('success') }}</div>
-  @endif
-  {{-- Service --}}
-  <div class="table-wrap" id="box-service" style="margin-bottom:16px;">
-    <div class="table-title">Service</div>
-    <table class="table">
-      <thead>
-        <tr>
-          <th>Ref #</th>
-          <th>Created Date</th>
-          <th>Created By</th>
-          <th>Client</th>
-          <th>Service</th>
-          <th>Schedule</th>
-          <th>Weight</th>
-          <th class="tar">Price</th>
-          <th class="tar">Subtotal</th>
-          <th>Status</th>
-          <th>Action</th>
-        </tr>
-      </thead>
-      <tbody id="tbody-service">
-        @forelse($services as $it)
-          <tr>
-            <td>{{ $it->ref_no }}</td>
-            <td>{{ \Carbon\Carbon::parse($it->created_at)->format('d M Y H:i') }}</td>
-            <td>{{ $it->created_by }}</td>
-            <td>{{ $it->client_name }}</td>
-            <td>{{ $it->product_name }}</td>
-            <td>
-              @if($it->scheduled_date)
-                {{ \Carbon\Carbon::parse($it->scheduled_date)->format('d M Y') }}
-                @if($it->scheduled_time) <br><small>{{ $it->scheduled_time }}</small> @endif
-              @else
-                -
-              @endif
-            </td>
-            <td>{{ $it->weight }}</td>
-            <td class="tar">Rp {{ number_format($it->price,0,',','.') }}</td>
-            <td class="tar">Rp {{ number_format($it->weight * $it->price,0,',','.') }}</td>
-            <td>{{ $it->status }}</td>
-            <td>
-              <form action="{{ route('transaction.update', $it->id) }}" method="POST" style="display:flex; gap:6px; align-items:center;">
-                @csrf
-                @method('PUT')
-                <select name="status" class="input">
-                  <option value="ON PROCESS" {{ $it->status=='ON PROCESS' ? 'selected' : '' }}>ON PROCESS</option>
-                  <option value="COMPLETED" {{ $it->status=='COMPLETED' ? 'selected' : '' }}>COMPLETED</option>
-                </select>
-                <button type="submit" class="btn btn-sm btn-primary">Update</button>
-              </form>
-            </td>
-          </tr>
-        @empty
-          <tr><td colspan="10" class="muted">Tidak ada service.</td></tr>
-        @endforelse
-      </tbody>
-    </table>
-  </div>
+    <!-- Header -->
+    <div style="display:flex; justify-content:space-between; align-items:center; margin:0 0 1.5rem; padding-bottom:1.5rem; border-bottom:1px solid var(--border);" class="no-print">
+        <div>
+            <h1 style="font-size:28px; font-weight:700; margin:0 0 0.375rem; color:var(--gray-900); letter-spacing:-0.3px;">
+                Detail Transaksi
+            </h1>
+            <p style="color:var(--text-secondary); margin:0; font-size:14px; font-weight:500;">
+                Ref: <strong style="color:var(--primary); font-family:monospace;">{{ $header->ref_no }}</strong>
+            </p>
+        </div>
+        <div style="display:flex; gap:0.5rem;">
+            <button onclick="window.print()" class="btn" style="height:40px; padding:0 1.5rem; background:var(--success); color:white; border:none;">
+                <i class="fas fa-print"></i> Cetak Struk
+            </button>
+            <a href="{{ route('list.page') }}" class="btn" style="height:40px; padding:0 1.5rem; background:var(--gray-100); border:1px solid var(--border);">
+                <i class="fas fa-arrow-left"></i> Kembali
+            </a>
+        </div>
+    </div>
 
+    @if(session('success'))
+        <div class="no-print" style="background:#d1fae5; border:1px solid #10b981; border-radius:var(--radius-md); padding:1rem 1.25rem; margin-bottom:1.5rem; color:#065f46;">
+            <i class="fas fa-check-circle"></i> {{ session('success') }}
+        </div>
+    @endif
 
-  <div class="actions" style="display:flex; align-items:center; gap:12px; margin-top:12px;">
-    <a href="{{ route('list.page') }}" class="btn">Kembali</a>
-    <div style="flex:1"></div>
-    <div class="strong">Total : <span id="det-total">Rp {{ number_format($total,0,',','.') }}</span></div>
-  </div>
-</section>
+    <!-- Transaction Info Card -->
+    <div class="card receipt-card" style="box-shadow:var(--shadow-sm); border-radius:var(--radius-lg); border:1px solid var(--border); margin-bottom:1.5rem;">
+        <div class="card-header no-print" style="background:var(--gray-50); border-bottom:1px solid var(--border); border-radius:var(--radius-lg) var(--radius-lg) 0 0; padding:1.25rem 1.5rem;">
+            <div style="display:flex; align-items:center; gap:0.75rem;">
+                <div style="width:36px; height:36px; background:white; border-radius:var(--radius); display:grid; place-items:center; border:1px solid var(--border);">
+                    <i class="fas fa-info-circle" style="font-size:16px; color:var(--primary);"></i>
+                </div>
+                <span style="font-weight:700; color:var(--gray-900); font-size:15px;">Informasi Transaksi</span>
+            </div>
+        </div>
+        <div class="card-body" style="padding:1.5rem;">
+            <div class="row">
+                <div class="col-md-3" style="margin-bottom:1rem;">
+                    <div style="font-size:12px; color:var(--text-secondary); font-weight:600; margin-bottom:0.375rem; text-transform:uppercase; letter-spacing:0.5px;">Tanggal</div>
+                    <div style="font-size:14px; font-weight:600; color:var(--gray-900);">
+                        <i class="fas fa-calendar" style="color:var(--gray-400); margin-right:0.5rem;"></i>
+                        {{ \Carbon\Carbon::parse($header->created_at)->format('d M Y H:i') }}
+                    </div>
+                </div>
+                <div class="col-md-3" style="margin-bottom:1rem;">
+                    <div style="font-size:12px; color:var(--text-secondary); font-weight:600; margin-bottom:0.375rem; text-transform:uppercase; letter-spacing:0.5px;">Pelanggan</div>
+                    <div style="font-size:14px; font-weight:600; color:var(--gray-900);">
+                        <i class="fas fa-user" style="color:var(--gray-400); margin-right:0.5rem;"></i>
+                        {{ $header->client_name }}
+                    </div>
+                </div>
+                <div class="col-md-3" style="margin-bottom:1rem;">
+                    <div style="font-size:12px; color:var(--text-secondary); font-weight:600; margin-bottom:0.375rem; text-transform:uppercase; letter-spacing:0.5px;">Dibuat Oleh</div>
+                    <div style="font-size:14px; font-weight:600; color:var(--gray-900);">
+                        <i class="fas fa-user-tag" style="color:var(--gray-400); margin-right:0.5rem;"></i>
+                        {{ $header->created_by }}
+                    </div>
+                </div>
+                <div class="col-md-3" style="margin-bottom:1rem;">
+                    <div style="font-size:12px; color:var(--text-secondary); font-weight:600; margin-bottom:0.375rem; text-transform:uppercase; letter-spacing:0.5px;">Total</div>
+                    <div style="font-size:18px; font-weight:700; color:var(--success);">
+                        <i class="fas fa-money-bill-wave" style="margin-right:0.5rem;"></i>
+                        Rp {{ number_format($total, 0, ',', '.') }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Service Items Table -->
+    <div class="card" style="box-shadow:var(--shadow-sm); border-radius:var(--radius-lg); border:1px solid var(--border); margin-bottom:2rem;">
+        <div class="card-header" style="background:white; border-bottom:1px solid var(--border); border-radius:var(--radius-lg) var(--radius-lg) 0 0; padding:1.25rem 1.5rem;">
+            <div style="display:flex; align-items:center; gap:0.75rem;">
+                <div style="width:36px; height:36px; background:var(--gray-50); border-radius:var(--radius); display:grid; place-items:center;">
+                    <i class="fas fa-list-ul" style="font-size:16px; color:var(--gray-600);"></i>
+                </div>
+                <span style="font-weight:700; color:var(--gray-900); font-size:15px;">Daftar Service</span>
+            </div>
+        </div>
+        <div class="card-body" style="padding:0;">
+            <div class="table-responsive">
+                <table class="table" style="margin:0;">
+                    <thead style="background:var(--gray-50);">
+                        <tr>
+                            <th style="font-size:12px; text-transform:uppercase; letter-spacing:0.5px; padding:0.875rem 1.5rem; color:var(--gray-600); font-weight:600; border-bottom:1px solid var(--border);">No</th>
+                            <th style="font-size:12px; text-transform:uppercase; letter-spacing:0.5px; padding:0.875rem 1.5rem; color:var(--gray-600); font-weight:600; border-bottom:1px solid var(--border);">Service</th>
+                            <th style="font-size:12px; text-transform:uppercase; letter-spacing:0.5px; padding:0.875rem 1.5rem; color:var(--gray-600); font-weight:600; border-bottom:1px solid var(--border);">Jadwal</th>
+                            <th style="font-size:12px; text-transform:uppercase; letter-spacing:0.5px; padding:0.875rem 1.5rem; color:var(--gray-600); font-weight:600; border-bottom:1px solid var(--border);">Berat</th>
+                            <th style="font-size:12px; text-transform:uppercase; letter-spacing:0.5px; padding:0.875rem 1.5rem; color:var(--gray-600); font-weight:600; border-bottom:1px solid var(--border);">Harga</th>
+                            <th style="font-size:12px; text-transform:uppercase; letter-spacing:0.5px; padding:0.875rem 1.5rem; color:var(--gray-600); font-weight:600; border-bottom:1px solid var(--border);">Subtotal</th>
+                            <th style="font-size:12px; text-transform:uppercase; letter-spacing:0.5px; padding:0.875rem 1.5rem; color:var(--gray-600); font-weight:600; border-bottom:1px solid var(--border);">Status</th>
+                            <th class="no-print" style="font-size:12px; text-transform:uppercase; letter-spacing:0.5px; padding:0.875rem 1.5rem; color:var(--gray-600); font-weight:600; border-bottom:1px solid var(--border); width:250px;">Update Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($services as $index => $it)
+                        <tr style="border-bottom:1px solid var(--gray-100);">
+                            <td style="padding:1rem 1.5rem; font-size:14px; color:var(--gray-700);">{{ $index + 1 }}</td>
+                            <td style="padding:1rem 1.5rem; font-weight:600; color:var(--gray-900);">{{ $it->product_name }}</td>
+                            <td style="padding:1rem 1.5rem; font-size:13px; color:var(--gray-700);">
+                                @if($it->scheduled_date)
+                                    <div style="display:flex; align-items:center; gap:0.5rem;">
+                                        <i class="fas fa-calendar-check" style="color:var(--primary); font-size:12px;"></i>
+                                        <div>
+                                            <div>{{ \Carbon\Carbon::parse($it->scheduled_date)->format('d M Y') }}</div>
+                                            @if($it->scheduled_time)
+                                                <div style="font-size:11px; color:var(--text-secondary);">{{ $it->scheduled_time }}</div>
+                                            @endif
+                                        </div>
+                                    </div>
+                                @else
+                                    <span style="color:var(--text-secondary);">-</span>
+                                @endif
+                            </td>
+                            <td style="padding:1rem 1.5rem; font-size:14px; color:var(--gray-700);">{{ $it->weight }} kg</td>
+                            <td style="padding:1rem 1.5rem; font-size:14px; color:var(--gray-700);">Rp {{ number_format($it->price, 0, ',', '.') }}</td>
+                            <td style="padding:1rem 1.5rem; font-weight:700; color:var(--success); font-size:15px;">Rp {{ number_format($it->weight * $it->price, 0, ',', '.') }}</td>
+                            <td style="padding:1rem 1.5rem;">
+                                @if($it->status == 'ON PROCESS')
+                                    <span class="badge bg-primary">ON PROCESS</span>
+                                @elseif($it->status == 'COMPLETED')
+                                    <span class="badge bg-success">COMPLETED</span>
+                                @else
+                                    <span class="badge bg-secondary">{{ $it->status }}</span>
+                                @endif
+                            </td>
+                            <td style="padding:1rem 1.5rem;">
+                                <form action="{{ route('transaction.update', $it->id) }}" method="POST" style="display:flex; gap:0.5rem; align-items:center;">
+                                    @csrf
+                                    @method('PUT')
+                                    <select name="status" class="input" style="flex:1; height:36px; font-size:13px;">
+                                        <option value="ON PROCESS" {{ $it->status=='ON PROCESS' ? 'selected' : '' }}>ON PROCESS</option>
+                                        <option value="COMPLETED" {{ $it->status=='COMPLETED' ? 'selected' : '' }}>COMPLETED</option>
+                                    </select>
+                                    <button type="submit" class="btn btn-sm" style="height:36px; padding:0 1rem; font-size:13px; background:var(--primary); color:white; border:none;">
+                                        <i class="fas fa-check"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        @empty
+                        <tr>
+                            <td colspan="8" style="padding:3rem; text-align:center;">
+                                <div style="color:var(--text-secondary);">
+                                    <i class="fas fa-inbox" style="font-size:48px; opacity:0.3; display:block; margin-bottom:1rem;"></i>
+                                    <div style="font-size:15px; font-weight:500;">Tidak ada service.</div>
+                                </div>
+                            </td>
+                        </tr>
+                        @endforelse
+                    </tbody>
+                    <tfoot style="background:var(--gray-50);">
+                        <tr>
+                            <td colspan="5" style="padding:1.25rem 1.5rem; text-align:right; font-weight:700; font-size:16px; color:var(--gray-900);">TOTAL:</td>
+                            <td colspan="3" style="padding:1.25rem 1.5rem; font-weight:700; font-size:18px; color:var(--success);">Rp {{ number_format($total, 0, ',', '.') }}</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
 <style>
-  .tar{text-align:right}
-  .muted{color:#888}
+/* Print Styles */
+@media print {
+    /* Hide non-printable elements */
+    .no-print,
+    nav,
+    .navbar,
+    .btn,
+    button,
+    .card-header.no-print {
+        display: none !important;
+    }
+
+    /* Page setup */
+    @page {
+        margin: 0.5cm;
+        size: A4 portrait;
+    }
+
+    body {
+        font-size: 12pt;
+        line-height: 1.4;
+        color: #000;
+        background: white;
+    }
+
+    /* Reset container padding for print */
+    .container-fluid {
+        padding: 0 !important;
+        max-width: 100% !important;
+    }
+
+    /* Company header - make it stand out */
+    .container-fluid > div:first-child {
+        padding: 1rem !important;
+        margin: 0 0 1rem 0 !important;
+        border: 2px solid #000 !important;
+        text-align: center;
+    }
+
+    .container-fluid > div:first-child h2 {
+        font-size: 18pt !important;
+        color: #000 !important;
+        margin: 0 0 0.5rem 0 !important;
+    }
+
+    /* Receipt card styling */
+    .receipt-card {
+        border: 1px solid #000 !important;
+        box-shadow: none !important;
+        page-break-inside: avoid;
+        margin-bottom: 1rem !important;
+    }
+
+    .receipt-card .card-body {
+        padding: 1rem !important;
+    }
+
+    /* Table styling for print */
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        page-break-inside: avoid;
+        font-size: 10pt;
+    }
+
+    table th {
+        background: #f0f0f0 !important;
+        color: #000 !important;
+        font-weight: bold;
+        border: 1px solid #000 !important;
+        padding: 0.5rem !important;
+    }
+
+    table td {
+        border: 1px solid #000 !important;
+        padding: 0.5rem !important;
+        color: #000 !important;
+    }
+
+    table tfoot {
+        background: #f0f0f0 !important;
+        font-weight: bold;
+    }
+
+    table tfoot td {
+        border-top: 2px solid #000 !important;
+    }
+
+    /* Remove card borders except main ones */
+    .card {
+        border: none !important;
+        box-shadow: none !important;
+    }
+
+    /* Ensure black text for print */
+    * {
+        color: #000 !important;
+    }
+
+    /* Status badges */
+    .badge {
+        border: 1px solid #000 !important;
+        padding: 0.25rem 0.5rem !important;
+        font-weight: bold !important;
+    }
+
+    /* Icons in print */
+    .fas, .far, .fa {
+        font-family: 'Font Awesome 6 Free' !important;
+    }
+}
 </style>
 @endsection

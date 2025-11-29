@@ -22,7 +22,7 @@
     <!-- Metrics Cards - Professional White Cards -->
     <div class="row" style="margin-bottom:1.75rem;">
         <!-- Transaksi Hari Ini -->
-        <div class="col-xl-3 col-md-6" style="margin-bottom:1.25rem;">
+        <div class="col-lg-6 col-md-6" style="margin-bottom:1.25rem;">
             <div style="background:white; border:1px solid var(--border); border-radius:var(--radius-lg); padding:1.5rem; transition:all 0.2s ease; box-shadow:var(--shadow-xs);" onmouseover="this.style.boxShadow='var(--shadow-md)'; this.style.borderColor='var(--primary-pale)'" onmouseout="this.style.boxShadow='var(--shadow-xs)'; this.style.borderColor='var(--border)'">
                 <div style="display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:1rem;">
                     <div style="width:48px; height:48px; background:var(--primary-pale); border-radius:var(--radius); display:grid; place-items:center;">
@@ -35,11 +35,11 @@
         </div>
 
         <!-- Pendapatan Hari Ini -->
-        <div class="col-xl-3 col-md-6" style="margin-bottom:1.25rem;">
+        <div class="col-lg-6 col-md-6" style="margin-bottom:1.25rem;">
             <div style="background:white; border:1px solid var(--border); border-radius:var(--radius-lg); padding:1.5rem; transition:all 0.2s ease; box-shadow:var(--shadow-xs);" onmouseover="this.style.boxShadow='var(--shadow-md)'; this.style.borderColor='#d1fae5'" onmouseout="this.style.boxShadow='var(--shadow-xs)'; this.style.borderColor='var(--border)'">
                 <div style="display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:1rem;">
-                    <div style="width:48px; height:48px; background:#d1fae5; border-radius:var(--radius); display:grid; place-items:center;">
-                        <i class="fas fa-trending-up" style="font-size:20px; color:var(--success);"></i>
+                    <div style="width:48px; height:48px; background:#10b981; border-radius:var(--radius); display:grid; place-items:center;">
+                        <i class="fas fa-dollar-sign" style="font-size:20px; color:white !important;"></i>
                     </div>
                 </div>
                 <div style="color:var(--text-secondary); font-size:13px; font-weight:600; margin-bottom:0.375rem; text-transform:uppercase; letter-spacing:0.5px;">Pendapatan Hari Ini</div>
@@ -48,7 +48,7 @@
         </div>
 
         <!-- Pending Payment -->
-        <div class="col-xl-3 col-md-6" style="margin-bottom:1.25rem;">
+        <div class="col-lg-6 col-md-6" style="margin-bottom:1.25rem;">
             <div style="background:white; border:1px solid var(--border); border-radius:var(--radius-lg); padding:1.5rem; transition:all 0.2s ease; box-shadow:var(--shadow-xs);" onmouseover="this.style.boxShadow='var(--shadow-md)'; this.style.borderColor='#fed7aa'" onmouseout="this.style.boxShadow='var(--shadow-xs)'; this.style.borderColor='var(--border)'">
                 <div style="display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:1rem;">
                     <div style="width:48px; height:48px; background:#fed7aa; border-radius:var(--radius); display:grid; place-items:center;">
@@ -56,13 +56,12 @@
                     </div>
                 </div>
                 <div style="color:var(--text-secondary); font-size:13px; font-weight:600; margin-bottom:0.375rem; text-transform:uppercase; letter-spacing:0.5px;">Pending Payment</div>
-                <div style="font-size:32px; font-weight:700; color:var(--gray-900); line-height:1;">{{ $metrics['pending_payments']['count'] }}</div>
-                <div style="color:var(--text-secondary); font-size:12px; margin-top:0.5rem; font-weight:500;">Rp {{ number_format($metrics['pending_payments']['total'], 0, ',', '.') }}</div>
+                <div style="font-size:28px; font-weight:700; color:var(--gray-900); line-height:1; letter-spacing:-0.5px;">Rp {{ number_format($metrics['pending_payments']['total'], 0, ',', '.') }}</div>
             </div>
         </div>
 
         <!-- Total Item -->
-        <div class="col-xl-3 col-md-6" style="margin-bottom:1.25rem;">
+        <div class="col-lg-6 col-md-6" style="margin-bottom:1.25rem;">
             <div style="background:white; border:1px solid var(--border); border-radius:var(--radius-lg); padding:1.5rem; transition:all 0.2s ease; box-shadow:var(--shadow-xs);" onmouseover="this.style.boxShadow='var(--shadow-md)'; this.style.borderColor='#e0e7ff'" onmouseout="this.style.boxShadow='var(--shadow-xs)'; this.style.borderColor='var(--border)'">
                 <div style="display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:1rem;">
                     <div style="width:48px; height:48px; background:#e0e7ff; border-radius:var(--radius); display:grid; place-items:center;">

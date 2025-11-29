@@ -44,6 +44,9 @@
   });
   </script>
 
+  {{-- Toast Notifications --}}
+  @include('partials.toast')
+
   {{-- <- penting untuk partials: --}}
   @stack('scripts')
 </body>
