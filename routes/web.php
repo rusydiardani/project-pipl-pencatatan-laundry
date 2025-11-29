@@ -118,14 +118,14 @@ Route::middleware('auth')->group(function () {
         Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
         Route::get('/reports/generate', [ReportController::class, 'generate'])->name('reports.generate');
     });
-
-
-
-
     /*
     |--------------------------------------------------------------------------
     | Halaman Buat Transaksi (SPA-like / Form)
     |--------------------------------------------------------------------------
     */
     Route::get('/buat', [TransactionController::class, 'createPage'])->name('buat.page');
+});
+
+Route::fallback(function () {
+    return response()->view('errors.404', [], 404);
 });

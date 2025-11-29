@@ -358,17 +358,12 @@ body{
 .nav-brand{ 
   font-weight:800; 
   font-size:18px;
-  background:linear-gradient(135deg, var(--primary), var(--primary-dark));
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
-  background-clip:text;
+  color:var(--primary);
   padding:0.625rem 0.5rem;
 }
 
 .nav-brand:hover{
-  background:linear-gradient(135deg, var(--primary-dark), var(--primary));
   -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
 }
 
 .nav-dropdown{ position:relative; }

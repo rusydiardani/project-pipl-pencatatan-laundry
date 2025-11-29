@@ -25,7 +25,7 @@
         <div class="card-body" style="padding:1.25rem 1.5rem;">
             <form method="GET" action="{{ route('list.page') }}" style="display:flex; gap:0.75rem; flex-wrap:wrap;">
                 <input type="text" name="search" value="{{ old('search', $search ?? '') }}" class="input" placeholder="Cari Ref No atau Nama Client..." style="flex:1; min-width:250px; height:40px;">
-                <select name="per_page" class="input" style="width:120px; height:40px;">
+                <select name="per_page" class="input" style="width:120px; height:40px;" onchange="this.form.submit()">
                   @foreach([10,20,50,100] as $pp)
                     <option value="{{ $pp }}" {{ (request('per_page', 10) == $pp) ? 'selected' : '' }}>{{ $pp }}/hal</option>
                   @endforeach
@@ -129,7 +129,7 @@
                     Menampilkan <strong>{{ $rows->firstItem() ?? 0 }}</strong> sampai <strong>{{ $rows->lastItem() ?? 0 }}</strong> dari <strong>{{ $rows->total() }}</strong> transaksi
                 </div>
                 <div>
-                    {{ $rows->links() }}
+                    {{ $rows->links('pagination.custom') }}
                 </div>
             </div>
         </div>

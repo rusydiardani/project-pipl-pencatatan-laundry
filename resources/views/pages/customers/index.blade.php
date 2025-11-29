@@ -23,12 +23,17 @@
     <div class="card" style="box-shadow:var(--shadow-sm); border-radius:var(--radius-lg); border:1px solid var(--border); margin-bottom:1.5rem;">
         <div class="card-body" style="padding:1.25rem 1.5rem;">
             <form action="{{ route('customers.index') }}" method="GET">
-                <div style="display:flex; gap:0.75rem;">
-                    <input type="text" name="search" class="input" style="flex:1; height:40px;" placeholder="Cari nama, no HP, atau email..." value="{{ request('search') }}">
+                <div style="display:flex; gap:0.75rem; flex-wrap:wrap;">
+                    <input type="text" name="search" class="input" style="flex:1; min-width:250px; height:40px;" placeholder="Cari nama, no HP, atau email..." value="{{ request('search') }}">
+                    <select name="per_page" class="input" style="width:120px; height:40px;" onchange="this.form.submit()">
+                        @foreach([10,20,50,100] as $pp)
+                            <option value="{{ $pp }}" {{ (request('per_page', 10) == $pp) ? 'selected' : '' }}>{{ $pp }}/hal</option>
+                        @endforeach
+                    </select>
                     <button type="submit" class="btn btn-primary" style="height:40px; padding:0 1.5rem; white-space:nowrap;">
                         <i class="fas fa-search"></i> Cari
                     </button>
-                    @if(request('search'))
+                    @if(request('search') || request('per_page'))
                         <a href="{{ route('customers.index') }}" class="btn" style="height:40px; padding:0 1.5rem; background:var(--gray-100); border:1px solid var(--border);">
                             <i class="fas fa-times"></i> Reset
                         </a>
@@ -63,26 +68,26 @@
                     </thead>
                     <tbody>
                         @forelse($customers as $customer)
-                        <tr style="border-bottom:1px solid var(--gray-100);">
-                            <td style="padding:1rem 1.5rem;">
+                        <tr style="border-bottom:1px solid var(--gray-100); transition:background 0.2s;">
+                            <td style="padding:0.75rem 1.5rem;">
                                 <div style="font-weight:600; color:var(--gray-900);">{{ $customer->name }}</div>
                             </td>
-                            <td style="padding:1rem 1.5rem; font-size:14px; color:var(--gray-700);">{{ $customer->phone }}</td>
-                            <td style="padding:1rem 1.5rem; font-size:14px; color:var(--gray-700);">{{ $customer->email ?? '-' }}</td>
-                            <td style="padding:1rem 1.5rem;">
-                                <span class="badge bg-primary">{{ $customer->transactionCount }} Transaksi</span>
+                            <td style="padding:0.75rem 1.5rem; font-size:14px; color:var(--gray-700);">{{ $customer->phone }}</td>
+                            <td style="padding:0.75rem 1.5rem; font-size:14px; color:var(--gray-700);">{{ $customer->email ?? '-' }}</td>
+                            <td style="padding:0.75rem 1.5rem;">
+                                <span class="badge" style="background:var(--primary-pale); color:var(--primary); font-weight:600; padding:0.35em 0.65em;">{{ $customer->transactionCount }} Transaksi</span>
                             </td>
-                            <td style="padding:1rem 1.5rem; font-weight:700; color:var(--success); font-size:14px;">Rp {{ number_format($customer->totalSpent, 0, ',', '.') }}</td>
-                            <td style="padding:1rem 1.5rem;">
+                            <td style="padding:0.75rem 1.5rem; font-weight:600; color:var(--success); font-size:14px;">Rp {{ number_format($customer->totalSpent, 0, ',', '.') }}</td>
+                            <td style="padding:0.75rem 1.5rem;">
                                 <div style="display:flex; gap:0.5rem;">
-                                    <a href="{{ route('customers.edit', $customer->id) }}" class="btn btn-sm" style="height:32px; padding:0 1rem; font-size:13px; background:var(--warning-pale); color:var(--warning); border:1px solid var(--warning);">
-                                        <i class="fas fa-edit"></i> Edit
+                                    <a href="{{ route('customers.edit', $customer->id) }}" class="btn btn-icon" style="width:32px; height:32px; padding:0; display:grid; place-items:center; background:white; border:1px solid var(--gray-300); color:var(--gray-600); border-radius:var(--radius);" title="Edit">
+                                        <i class="fas fa-pencil-alt" style="font-size:13px;"></i>
                                     </a>
                                     <form action="{{ route('customers.destroy', $customer->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin ingin menghapus pelanggan ini?')">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="btn btn-sm" style="height:32px; padding:0 1rem; font-size:13px; background:var(--danger-pale); color:var(--danger); border:1px solid var(--danger);">
-                                            <i class="fas fa-trash"></i> Hapus
+                                        <button type="submit" class="btn btn-icon" style="width:32px; height:32px; padding:0; display:grid; place-items:center; background:white; border:1px solid var(--danger-pale); color:var(--danger); border-radius:var(--radius);" title="Hapus">
+                                            <i class="fas fa-trash" style="font-size:13px;"></i>
                                         </button>
                                     </form>
                                 </div>
@@ -104,6 +109,18 @@
             </div>
         </div>
     </div>
+    @if($customers->hasPages())
+    <div class="card-footer" style="background:var(--gray-50); border-top:1px solid var(--border); border-radius:0 0 var(--radius-lg) var(--radius-lg); padding:1rem 1.5rem;">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div style="color:var(--text-secondary); font-size:13px;">
+                Menampilkan <strong>{{ $customers->firstItem() ?? 0 }}</strong> sampai <strong>{{ $customers->lastItem() ?? 0 }}</strong> dari <strong>{{ $customers->total() }}</strong> pelanggan
+            </div>
+            <div>
+                {{ $customers->links('pagination.custom') }}
+            </div>
+        </div>
+    </div>
+    @endif
 </div>
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">

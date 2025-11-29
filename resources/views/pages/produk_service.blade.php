@@ -26,6 +26,13 @@
                         </div>
                         <span style="font-weight:700; color:var(--gray-900); font-size:15px;">List Service</span>
                     </div>
+                    <form method="GET" action="{{ route('service.index') }}" style="margin:0;">
+                        <select name="per_page" class="input" style="height:36px; padding:0 2rem 0 1rem; font-size:13px; border-radius:var(--radius); background-color:var(--gray-50); border-color:var(--border);" onchange="this.form.submit()">
+                            @foreach([10,20,50,100] as $pp)
+                                <option value="{{ $pp }}" {{ (request('per_page', 10) == $pp) ? 'selected' : '' }}>{{ $pp }}/hal</option>
+                            @endforeach
+                        </select>
+                    </form>
                 </div>
                 <div class="card-body" style="padding:0;">
                     <div class="table-responsive">
@@ -41,24 +48,24 @@
                             </thead>
                             <tbody>
                                 @forelse($services as $index => $service)
-                                <tr style="border-bottom:1px solid var(--gray-100);">
-                                    <td style="padding:1rem 1.5rem; font-size:14px; color:var(--gray-700);">{{ $index + 1 }}</td>
-                                    <td style="padding:1rem 1.5rem; font-weight:600; color:var(--gray-900);">{{ $service->name }}</td>
-                                    <td style="padding:1rem 1.5rem; font-size:14px; color:var(--success); font-weight:600;">Rp {{ number_format($service->price, 0, ',', '.') }}</td>
-                                    <td style="padding:1rem 1.5rem;">
+                                <tr style="border-bottom:1px solid var(--gray-100); transition:all 0.2s;">
+                                    <td style="padding:0.75rem 1.5rem; font-size:14px; color:var(--gray-700);">{{ $index + 1 }}</td>
+                                    <td style="padding:0.75rem 1.5rem; font-weight:600; color:var(--gray-900);">{{ $service->name }}</td>
+                                    <td style="padding:0.75rem 1.5rem; font-size:14px; color:var(--success); font-weight:600;">Rp {{ number_format($service->price, 0, ',', '.') }}</td>
+                                    <td style="padding:0.75rem 1.5rem;">
                                         @if($service->available)
-                                            <span class="badge bg-success">YA</span>
+                                            <span class="badge" style="background:var(--success-pale); color:var(--success); padding:0.35em 0.65em; font-weight:600;">YA</span>
                                         @else
-                                            <span class="badge bg-danger">TIDAK</span>
+                                            <span class="badge" style="background:var(--danger-pale); color:var(--danger); padding:0.35em 0.65em; font-weight:600;">TIDAK</span>
                                         @endif
                                     </td>
-                                    <td style="padding:1rem 1.5rem;">
+                                    <td style="padding:0.75rem 1.5rem;">
                                         <div style="display:flex; gap:0.5rem;">
-                                            <a href="{{ route('service.edit', $service->id) }}" class="btn btn-sm" style="height:32px; padding:0 0.875rem; font-size:13px; background:var(--warning-pale); color:var(--warning); border:1px solid var(--warning);">
-                                                <i class="fas fa-edit"></i>
+                                            <a href="{{ route('service.edit', $service->id) }}" class="btn btn-icon" style="width:32px; height:32px; padding:0; display:grid; place-items:center; background:white; border:1px solid var(--gray-300); color:var(--gray-600); border-radius:var(--radius);" title="Edit">
+                                                <i class="fas fa-pencil-alt" style="font-size:13px;"></i>
                                             </a>
-                                            <button type="button" onclick="openDeleteModal('{{ route('service.destroy', $service->id) }}', '{{ $service->name }}')" class="btn btn-sm" style="height:32px; padding:0 0.875rem; font-size:13px; background:var(--danger-pale); color:var(--danger); border:1px solid var(--danger);">
-                                                <i class="fas fa-trash"></i>
+                                            <button type="button" onclick="openDeleteModal('{{ route('service.destroy', $service->id) }}', '{{ $service->name }}')" class="btn btn-icon" style="width:32px; height:32px; padding:0; display:grid; place-items:center; background:white; border:1px solid var(--danger-pale); color:var(--danger); border-radius:var(--radius);" title="Hapus">
+                                                <i class="fas fa-trash" style="font-size:13px;"></i>
                                             </button>
                                         </div>
                                     </td>
@@ -78,6 +85,18 @@
                         </table>
                     </div>
                 </div>
+                @if($services->hasPages())
+                <div class="card-footer" style="background:var(--gray-50); border-top:1px solid var(--border); border-radius:0 0 var(--radius-lg) var(--radius-lg); padding:1rem 1.5rem;">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <div style="color:var(--text-secondary); font-size:13px;">
+                            Menampilkan <strong>{{ $services->firstItem() ?? 0 }}</strong> sampai <strong>{{ $services->lastItem() ?? 0 }}</strong> dari <strong>{{ $services->total() }}</strong> service
+                        </div>
+                        <div>
+                            {{ $services->links('pagination.custom') }}
+                        </div>
+                    </div>
+                </div>
+                @endif
             </div>
         </div>
 

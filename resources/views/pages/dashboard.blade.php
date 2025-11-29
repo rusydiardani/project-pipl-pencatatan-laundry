@@ -77,11 +77,20 @@
     <!-- Revenue Chart - Full Width -->
     <div class="card" style="box-shadow:var(--shadow-sm); border-radius:var(--radius-lg); border:1px solid var(--border); margin-bottom:1.75rem;">
         <div class="card-header" style="background:white; border-bottom:1px solid var(--border); border-radius:var(--radius-lg) var(--radius-lg) 0 0; padding:1.25rem 1.5rem;">
-            <div style="display:flex; align-items:center; gap:0.75rem;">
-                <div style="width:36px; height:36px; background:var(--gray-50); border-radius:var(--radius); display:grid; place-items:center;">
-                    <i class="fas fa-chart-bar" style="font-size:16px; color:var(--gray-600);"></i>
+            <div style="display:flex; align-items:center; justify-content:space-between; width:100%;">
+                <div style="display:flex; align-items:center; gap:0.75rem;">
+                    <div style="width:36px; height:36px; background:var(--gray-50); border-radius:var(--radius); display:grid; place-items:center;">
+                        <i class="fas fa-chart-bar" style="font-size:16px; color:var(--gray-600);"></i>
+                    </div>
+                    <span style="font-weight:700; color:var(--gray-900); font-size:15px;">Perbandingan Pendapatan</span>
                 </div>
-                <span style="font-weight:700; color:var(--gray-900); font-size:15px;">Perbandingan Pendapatan</span>
+                <form action="{{ route('dashboard') }}" method="GET" style="margin:0;">
+                    <select name="month" class="input" style="height:36px; padding:0 2rem 0 1rem; font-size:13px; border-radius:var(--radius); background-color:var(--gray-50); border-color:var(--border);" onchange="this.form.submit()">
+                        @foreach($availableMonths as $m)
+                            <option value="{{ $m['value'] }}" {{ $selectedMonth == $m['value'] ? 'selected' : '' }}>{{ $m['label'] }}</option>
+                        @endforeach
+                    </select>
+                </form>
             </div>
         </div>
         <div class="card-body" style="padding:1.5rem;">
@@ -92,11 +101,16 @@
     <!-- Recent Transactions -->
     <div class="card" style="box-shadow:var(--shadow-sm); border-radius:var(--radius-lg); border:1px solid var(--border); margin-bottom:2rem;">
         <div class="card-header" style="background:white; border-bottom:1px solid var(--border); border-radius:var(--radius-lg) var(--radius-lg) 0 0; padding:1.25rem 1.5rem;">
-            <div style="display:flex; align-items:center; gap:0.75rem;">
-                <div style="width:36px; height:36px; background:var(--gray-50); border-radius:var(--radius); display:grid; place-items:center;">
-                    <i class="fas fa-receipt" style="font-size:16px; color:var(--gray-600);"></i>
+            <div style="display:flex; align-items:center; justify-content:space-between; width:100%;">
+                <div style="display:flex; align-items:center; gap:0.75rem;">
+                    <div style="width:36px; height:36px; background:var(--gray-50); border-radius:var(--radius); display:grid; place-items:center;">
+                        <i class="fas fa-receipt" style="font-size:16px; color:var(--gray-600);"></i>
+                    </div>
+                    <span style="font-weight:700; color:var(--gray-900); font-size:15px;">Transaksi Terakhir</span>
                 </div>
-                <span style="font-weight:700; color:var(--gray-900); font-size:15px;">Transaksi Terakhir</span>
+                <a href="{{ route('list.page') }}" style="display:inline-flex; align-items:center; gap:0.5rem; font-size:12px; font-weight:600; color:var(--primary); text-decoration:none; background:var(--primary-pale); padding:0.5rem 1rem; border-radius:99px; transition:all 0.2s;" onmouseover="this.style.background='var(--primary)'; this.style.color='white'" onmouseout="this.style.background='var(--primary-pale)'; this.style.color='var(--primary)'">
+                    Lihat Semua <i class="fas fa-arrow-right" style="font-size:10px;"></i>
+                </a>
             </div>
         </div>
         <div class="card-body" style="padding:0;">
@@ -142,12 +156,10 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    // Calculate trend line (simple moving trend)
-    const revenueData = [
-        {{ $revenueStats['today'] }},
-        {{ $revenueStats['this_week'] }},
-        {{ $revenueStats['this_month'] }}
-    ];
+    // Dynamic Data from Controller
+    const chartData = @json($chartData);
+    const revenueData = chartData.map(item => item.total);
+    const categories = chartData.map(item => item.date);
     
     // Create trend line (slightly smoothed)
     const trendData = revenueData.map((val, idx) => {
@@ -297,7 +309,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         },
         xaxis: {
-            categories: ['Hari Ini', 'Minggu Ini', 'Bulan Ini'],
+            categories: categories,
             labels: {
                 style: {
                     colors: '#475569',

@@ -10,7 +10,8 @@ class ProductController extends Controller
 {
     public function index(Request $request)
     {
-        $products = Product::orderBy('name')->get();
+        $perPage = $request->input('per_page', 10);
+        $products = Product::orderBy('name')->paginate($perPage)->appends($request->query());
         return view('pages.products.index', compact('products'));
     }
 

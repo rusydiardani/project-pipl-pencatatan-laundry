@@ -12,7 +12,8 @@ class ServiceController extends Controller
      */
     public function index(Request $request)
     {
-        $services = Service::all();
+        $perPage = $request->input('per_page', 10);
+        $services = Service::paginate($perPage)->appends($request->query());
 
         // Jika akses via API
         if ($request->wantsJson()) {

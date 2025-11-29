@@ -19,10 +19,12 @@ class CustomerController extends Controller
 
     public function index(Request $request)
     {
+        $perPage = $request->input('per_page', 10);
+
         if ($request->filled('search')) {
-            $customers = $this->customerRepo->search($request->search);
+            $customers = $this->customerRepo->searchPaginated($request->search, $perPage);
         } else {
-            $customers = $this->customerRepo->getAll();
+            $customers = $this->customerRepo->getPaginated($perPage);
         }
 
         if ($request->wantsJson()) {

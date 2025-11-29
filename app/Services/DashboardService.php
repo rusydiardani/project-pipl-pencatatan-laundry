@@ -101,4 +101,62 @@ class DashboardService
     {
         return $this->transactionRepo->getRecentTransactions($limit);
     }
+    /**
+     * Get available months for filter
+     */
+    public function getAvailableMonths(): array
+    {
+        $dates = DB::table('transactions')
+            ->select(DB::raw('DATE_FORMAT(created_at, "%Y-%m") as month_year'))
+            ->distinct()
+            ->orderBy('month_year', 'desc')
+            ->pluck('month_year');
+
+        return $dates->map(function ($date) {
+            return [
+                'value' => $date,
+                'label' => \Carbon\Carbon::createFromFormat('Y-m', $date)->translatedFormat('F Y')
+            ];
+        })->toArray();
+    }
+
+    /**
+     * Get daily revenue for chart
+     */
+    public function getDailyRevenueChart(?string $monthYear = null): array
+    {
+        if ($monthYear) {
+            $date = \Carbon\Carbon::createFromFormat('Y-m', $monthYear);
+            $startDate = $date->copy()->startOfMonth();
+            $endDate = $date->copy()->endOfMonth();
+        } else {
+            // Default: Current Month
+            $startDate = now()->startOfMonth();
+            $endDate = now()->endOfMonth();
+        }
+
+        $data = DB::table('transactions')
+            ->select(DB::raw('DATE(created_at) as date'), DB::raw('SUM(weight * price) as total'))
+            ->where('payment_status', 'PAID')
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->groupBy('date')
+            ->orderBy('date')
+            ->get();
+
+        // Fill missing dates with 0
+        $chartData = [];
+        $period = \Carbon\CarbonPeriod::create($startDate, $endDate);
+
+        foreach ($period as $date) {
+            $dateString = $date->format('Y-m-d');
+            $found = $data->firstWhere('date', $dateString);
+            $chartData[] = [
+                'date' => $date->format('d'), // Just the date number
+                'full_date' => $date->translatedFormat('d M Y'),
+                'total' => $found ? (float) $found->total : 0
+            ];
+        }
+
+        return $chartData;
+    }
 }

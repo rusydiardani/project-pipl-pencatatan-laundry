@@ -40,4 +40,17 @@ class CustomerRepository
             ->orderBy('name')
             ->get();
     }
+    public function getPaginated(int $perPage = 10)
+    {
+        return Customer::orderBy('name')->paginate($perPage);
+    }
+
+    public function searchPaginated(string $query, int $perPage = 10)
+    {
+        return Customer::where('name', 'like', "%{$query}%")
+            ->orWhere('phone', 'like', "%{$query}%")
+            ->orWhere('email', 'like', "%{$query}%")
+            ->orderBy('name')
+            ->paginate($perPage);
+    }
 }

@@ -20,12 +20,19 @@
     <!-- Products Card -->
     <div class="card" style="box-shadow:var(--shadow-sm); border-radius:var(--radius-lg); border:1px solid var(--border);">
         <div class="card-header" style="background:white; border-bottom:1px solid var(--border); border-radius:var(--radius-lg) var(--radius-lg) 0 0; padding:1.25rem 1.5rem;">
-            <div style="display:flex; align-items:center; gap:0.75rem;">
-                <div style="width:36px; height:36px; background:var(--gray-50); border-radius:var(--radius); display:grid; place-items:center;">
-                    <i class="fas fa-box" style="font-size:16px; color:var(--gray-600);"></i>
+                <div style="display:flex; align-items:center; gap:0.75rem;">
+                    <div style="width:36px; height:36px; background:var(--gray-50); border-radius:var(--radius); display:grid; place-items:center;">
+                        <i class="fas fa-box" style="font-size:16px; color:var(--gray-600);"></i>
+                    </div>
+                    <span style="font-weight:700; color:var(--gray-900); font-size:15px;">List Produk</span>
                 </div>
-                <span style="font-weight:700; color:var(--gray-900); font-size:15px;">List Produk</span>
-            </div>
+                <form method="GET" action="{{ route('products.index') }}" style="margin:0;">
+                    <select name="per_page" class="input" style="height:36px; padding:0 2rem 0 1rem; font-size:13px; border-radius:var(--radius); background-color:var(--gray-50); border-color:var(--border);" onchange="this.form.submit()">
+                        @foreach([10,20,50,100] as $pp)
+                            <option value="{{ $pp }}" {{ (request('per_page', 10) == $pp) ? 'selected' : '' }}>{{ $pp }}/hal</option>
+                        @endforeach
+                    </select>
+                </form>
         </div>
         <div class="card-body" style="padding:1.5rem;">
             <div class="table-responsive">
@@ -41,26 +48,26 @@
                     <tbody>
                         @forelse($products as $product)
                         <tr style="transition:all 0.2s; border-bottom:1px solid var(--gray-100);">
-                            <td style="padding:1rem 1.5rem; vertical-align:middle; border-bottom:1px solid var(--gray-100);">
+                            <td style="padding:0.75rem 1.5rem; vertical-align:middle; border-bottom:1px solid var(--gray-100);">
                                 <div style="font-weight:600; color:var(--gray-900);">{{ $product->name }}</div>
                             </td>
-                            <td style="padding:1rem 1.5rem; vertical-align:middle; border-bottom:1px solid var(--gray-100); text-align:right;">
+                            <td style="padding:0.75rem 1.5rem; vertical-align:middle; border-bottom:1px solid var(--gray-100); text-align:right;">
                                 <div style="font-weight:600; color:var(--success);">Rp {{ number_format($product->price, 0, ',', '.') }}</div>
                             </td>
-                            <td style="padding:1rem 1.5rem; vertical-align:middle; border-bottom:1px solid var(--gray-100); text-align:center;">
+                            <td style="padding:0.75rem 1.5rem; vertical-align:middle; border-bottom:1px solid var(--gray-100); text-align:center;">
                                 @if($product->stock < 10)
-                                    <span class="badge bg-danger" style="padding:0.5em 0.75em; font-weight:600;">{{ $product->stock }} (Low)</span>
+                                    <span class="badge" style="background:var(--danger-pale); color:var(--danger); padding:0.35em 0.65em; font-weight:600;">{{ $product->stock }} (Low)</span>
                                 @else
-                                    <span class="badge bg-success" style="padding:0.5em 0.75em; font-weight:600;">{{ $product->stock }}</span>
+                                    <span class="badge" style="background:var(--success-pale); color:var(--success); padding:0.35em 0.65em; font-weight:600;">{{ $product->stock }}</span>
                                 @endif
                             </td>
-                            <td style="padding:1rem 1.5rem; vertical-align:middle; border-bottom:1px solid var(--gray-100); text-align:right;">
+                            <td style="padding:0.75rem 1.5rem; vertical-align:middle; border-bottom:1px solid var(--gray-100); text-align:right;">
                                 <div style="display:flex; gap:0.5rem; justify-content:flex-end;">
-                                    <a href="{{ route('products.edit', $product->id) }}" class="btn btn-icon" style="width:32px; height:32px; padding:0; display:grid; place-items:center; background:#fef3c7; color:#d97706; border:1px solid #fef3c7; border-radius:var(--radius);">
-                                        <i class="fas fa-edit" style="font-size:12px;"></i>
+                                    <a href="{{ route('products.edit', $product->id) }}" class="btn btn-icon" style="width:32px; height:32px; padding:0; display:grid; place-items:center; background:white; border:1px solid var(--gray-300); color:var(--gray-600); border-radius:var(--radius);" title="Edit">
+                                        <i class="fas fa-pencil-alt" style="font-size:13px;"></i>
                                     </a>
-                                    <button type="button" onclick="openDeleteModal('{{ route('products.destroy', $product->id) }}', '{{ $product->name }}')" class="btn btn-icon" style="width:32px; height:32px; padding:0; display:grid; place-items:center; background:#fee2e2; color:#dc2626; border:1px solid #fee2e2; border-radius:var(--radius);">
-                                        <i class="fas fa-trash" style="font-size:12px;"></i>
+                                    <button type="button" onclick="openDeleteModal('{{ route('products.destroy', $product->id) }}', '{{ $product->name }}')" class="btn btn-icon" style="width:32px; height:32px; padding:0; display:grid; place-items:center; background:white; border:1px solid var(--danger-pale); color:var(--danger); border-radius:var(--radius);" title="Hapus">
+                                        <i class="fas fa-trash" style="font-size:13px;"></i>
                                     </button>
                                 </div>
                             </td>
@@ -83,6 +90,19 @@
                 </table>
             </div>
         </div>
+        </div>
+        @if($products->hasPages())
+        <div class="card-footer" style="background:var(--gray-50); border-top:1px solid var(--border); border-radius:0 0 var(--radius-lg) var(--radius-lg); padding:1rem 1.5rem;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <div style="color:var(--text-secondary); font-size:13px;">
+                    Menampilkan <strong>{{ $products->firstItem() ?? 0 }}</strong> sampai <strong>{{ $products->lastItem() ?? 0 }}</strong> dari <strong>{{ $products->total() }}</strong> produk
+                </div>
+                <div>
+                    {{ $products->links('pagination.custom') }}
+                </div>
+            </div>
+        </div>
+        @endif
     </div>
 </div>
 

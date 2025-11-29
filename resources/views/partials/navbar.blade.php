@@ -1,19 +1,19 @@
 <nav class="nav">
   <div class="nav-left">
     <a class="nav-brand" href="{{ route('dashboard') }}">Laundry App</a>
-    <a class="nav-link" href="{{ route('dashboard') }}">Home</a>
-    <a class="nav-link" href="{{ route('list.page') }}">List Transaksi</a>
-    <a class="nav-link" href="{{ route('reports.index') }}">Laporan</a>
+    <a class="nav-link" href="{{ route('dashboard') }}" style="{{ request()->routeIs('dashboard') ? 'color:var(--primary);' : '' }}">Home</a>
+    <a class="nav-link" href="{{ route('list.page') }}" style="{{ request()->routeIs('list.page') ? 'color:var(--primary);' : '' }}">List Transaksi</a>
+    <a class="nav-link" href="{{ route('reports.index') }}" style="{{ request()->routeIs('reports.index') ? 'color:var(--primary);' : '' }}">Laporan</a>
     <!-- <a class="nav-link" href="{{ route('customers.index') }}">Pelanggan</a> -->
-    <a class="nav-link" href="{{ route('buat.page') }}">Buat Transaksi</a>
+    <a class="nav-link" href="{{ route('buat.page') }}" style="{{ request()->routeIs('buat.page') ? 'color:var(--primary);' : '' }}">Buat Transaksi</a>
 
     {{-- Dropdown Master Data --}}
     <div class="nav-dropdown">
-      <button class="nav-link dropdown-toggle" data-dd>Data Master ▾</button>
+      <button class="nav-link dropdown-toggle" data-dd style="{{ request()->routeIs('service.*') || request()->routeIs('products.*') || request()->routeIs('customers.*') ? 'color:var(--primary);' : '' }}">Data Master ▾</button>
       <div class="dropdown-menu">
-        <a href="{{ route('service.index') }}" class="dropdown-item">Layanan (Service)</a>
-        <a href="{{ route('products.index') }}" class="dropdown-item">Barang (Stok)</a>
-        <a href="{{ route('customers.index') }}" class="dropdown-item">Pelanggan</a>
+        <a href="{{ route('service.index') }}" class="dropdown-item" style="{{ request()->routeIs('service.*') ? 'color:var(--primary); background:var(--gray-50);' : '' }}">Layanan (Service)</a>
+        <a href="{{ route('products.index') }}" class="dropdown-item" style="{{ request()->routeIs('products.*') ? 'color:var(--primary); background:var(--gray-50);' : '' }}">Barang (Stok)</a>
+        <a href="{{ route('customers.index') }}" class="dropdown-item" style="{{ request()->routeIs('customers.*') ? 'color:var(--primary); background:var(--gray-50);' : '' }}">Pelanggan</a>
       </div>
     </div>
 
