@@ -105,7 +105,7 @@
                             <th style="font-size:12px; text-transform:uppercase; letter-spacing:0.5px; padding:0.875rem 1.5rem; color:var(--gray-600); font-weight:600; border-bottom:1px solid var(--border);">Berat</th>
                             <th style="font-size:12px; text-transform:uppercase; letter-spacing:0.5px; padding:0.875rem 1.5rem; color:var(--gray-600); font-weight:600; border-bottom:1px solid var(--border);">Harga</th>
                             <th style="font-size:12px; text-transform:uppercase; letter-spacing:0.5px; padding:0.875rem 1.5rem; color:var(--gray-600); font-weight:600; border-bottom:1px solid var(--border);">Subtotal</th>
-                            <th style="font-size:12px; text-transform:uppercase; letter-spacing:0.5px; padding:0.875rem 1.5rem; color:var(--gray-600); font-weight:600; border-bottom:1px solid var(--border);">Status</th>
+                            <th class="no-print" style="font-size:12px; text-transform:uppercase; letter-spacing:0.5px; padding:0.875rem 1.5rem; color:var(--gray-600); font-weight:600; border-bottom:1px solid var(--border);">Status</th>
                             <th class="no-print" style="font-size:12px; text-transform:uppercase; letter-spacing:0.5px; padding:0.875rem 1.5rem; color:var(--gray-600); font-weight:600; border-bottom:1px solid var(--border); width:250px;">Update Status</th>
                         </tr>
                     </thead>
@@ -132,7 +132,7 @@
                             <td style="padding:1rem 1.5rem; font-size:14px; color:var(--gray-700);">{{ $it->weight }} kg</td>
                             <td style="padding:1rem 1.5rem; font-size:14px; color:var(--gray-700);">Rp {{ number_format($it->price, 0, ',', '.') }}</td>
                             <td style="padding:1rem 1.5rem; font-weight:700; color:var(--success); font-size:15px;">Rp {{ number_format($it->weight * $it->price, 0, ',', '.') }}</td>
-                            <td style="padding:1rem 1.5rem;">
+                            <td class="no-print" style="padding:1rem 1.5rem;">
                                 @if($it->status == 'ON PROCESS')
                                     <span class="badge bg-primary">ON PROCESS</span>
                                 @elseif($it->status == 'COMPLETED')
@@ -141,7 +141,7 @@
                                     <span class="badge bg-secondary">{{ $it->status }}</span>
                                 @endif
                             </td>
-                            <td style="padding:1rem 1.5rem;">
+                            <td class="no-print" style="padding:1rem 1.5rem;">
                                 <form action="{{ route('transaction.update', $it->id) }}" method="POST" style="display:flex; gap:0.5rem; align-items:center;">
                                     @csrf
                                     @method('PUT')
@@ -189,8 +189,14 @@
     .navbar,
     .btn,
     button,
-    .card-header.no-print {
+    form,
+    select,
+    input[type="submit"],
+    .card-header.no-print,
+    th.no-print,
+    td.no-print {
         display: none !important;
+        visibility: hidden !important;
     }
 
     /* Page setup */

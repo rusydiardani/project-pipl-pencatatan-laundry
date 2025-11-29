@@ -6,7 +6,7 @@ use App\Events\TransactionCreated;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use App\Services\InventoryService;
-use App\Models\Med;
+use App\Models\Product;
 use App\Models\Transaction;
 
 class UpdateProductStock
@@ -37,11 +37,11 @@ class UpdateProductStock
         // Yes: foreach ($validated['items'] as $item) { Transaction::create(...) }
         // So $transaction is a SINGLE transaction row which corresponds to ONE item.
         
-        if ($transaction->product_type === 'med') {
-            $med = Med::find($transaction->product_id);
-            if ($med) {
+        if ($transaction->product_type === 'product') {
+            $product = Product::find($transaction->product_id);
+            if ($product) {
                 try {
-                    $this->inventoryService->deductStock($med, $transaction->weight, $transaction->id);
+                    $this->inventoryService->deductStock($product, $transaction->weight, $transaction->id);
                 } catch (\Exception $e) {
                     // Log error or handle it. 
                     // Since event is sync (default), exception will bubble up.

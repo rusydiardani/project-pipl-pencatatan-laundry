@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Models\Med;
+use App\Models\Product;
 use App\Models\StockMovement;
 
 class InventoryService
@@ -10,7 +10,7 @@ class InventoryService
     /**
      * Kurangi stok produk
      */
-    public function deductStock(Med $product, float $quantity, ?int $transactionId = null): bool
+    public function deductStock(Product $product, float $quantity, ?int $transactionId = null): bool
     {
         if ($product->stock < $quantity) {
             throw new \Exception("Stok {$product->name} tidak mencukupi. Tersedia: {$product->stock}, Dibutuhkan: {$quantity}");
@@ -33,7 +33,7 @@ class InventoryService
     /**
      * Tambah stok produk
      */
-    public function addStock(Med $product, float $quantity, ?string $notes = null): bool
+    public function addStock(Product $product, float $quantity, ?string $notes = null): bool
     {
         $product->increment('stock', $quantity);
         
@@ -52,7 +52,7 @@ class InventoryService
     /**
      * Cek apakah produk low stock
      */
-    public function isLowStock(Med $product, int $threshold = 10): bool
+    public function isLowStock(Product $product, int $threshold = 10): bool
     {
         return $product->stock <= $threshold;
     }
@@ -62,6 +62,6 @@ class InventoryService
      */
     public function getLowStockProducts(int $threshold = 10)
     {
-        return Med::where('stock', '<=', $threshold)->get();
+        return Product::where('stock', '<=', $threshold)->get();
     }
 }

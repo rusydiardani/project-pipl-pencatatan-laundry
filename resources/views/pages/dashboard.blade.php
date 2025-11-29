@@ -74,60 +74,18 @@
         </div>
     </div>
 
-    <div class="row">
-        <!-- Status Breakdown -->
-        <div class="col-xl-6" style="margin-bottom:1.75rem;">
-            <div class="card" style="box-shadow:var(--shadow-sm); border-radius:var(--radius-lg); border:1px solid var(--border); height:100%;">
-                <div class="card-header" style="background:white; border-bottom:1px solid var(--border); border-radius:var(--radius-lg) var(--radius-lg) 0 0; padding:1.25rem 1.5rem;">
-                    <div style="display:flex; align-items:center; gap:0.75rem;">
-                        <div style="width:36px; height:36px; background:var(--gray-50); border-radius:var(--radius); display:grid; place-items:center;">
-                            <i class="fas fa-chart-pie" style="font-size:16px; color:var(--gray-600);"></i>
-                        </div>
-                        <span style="font-weight:700; color:var(--gray-900); font-size:15px;">Status Transaksi</span>
-                    </div>
+    <!-- Revenue Chart - Full Width -->
+    <div class="card" style="box-shadow:var(--shadow-sm); border-radius:var(--radius-lg); border:1px solid var(--border); margin-bottom:1.75rem;">
+        <div class="card-header" style="background:white; border-bottom:1px solid var(--border); border-radius:var(--radius-lg) var(--radius-lg) 0 0; padding:1.25rem 1.5rem;">
+            <div style="display:flex; align-items:center; gap:0.75rem;">
+                <div style="width:36px; height:36px; background:var(--gray-50); border-radius:var(--radius); display:grid; place-items:center;">
+                    <i class="fas fa-chart-bar" style="font-size:16px; color:var(--gray-600);"></i>
                 </div>
-                <div class="card-body" style="padding:1.5rem;">
-                    <div class="table-responsive">
-                        <table class="table" style="margin:0;">
-                            <thead>
-                                <tr>
-                                    <th style="font-size:12px; text-transform:uppercase; letter-spacing:0.5px; padding:0.75rem 1rem; color:var(--gray-600); font-weight:600; border-bottom:1px solid var(--bord-light);">Status</th>
-                                    <th class="text-center" style="font-size:12px; text-transform:uppercase; letter-spacing:0.5px; padding:0.75rem 1rem; color:var(--gray-600); font-weight:600; border-bottom:1px solid var(--border-light);">Jumlah</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach($statusBreakdown as $status => $count)
-                                    @if($count > 0)
-                                    <tr style="border-bottom:1px solid var(--gray-100);">
-                                        <td style="padding:1rem;">
-                                            <span class="badge {{ $status == 'NEW' ? 'bg-secondary' : '' }} {{ $status == 'PROCESS' ? 'bg-primary' : '' }} {{ $status == 'READY' ? 'bg-info' : '' }} {{ $status == 'COMPLETED' ? 'bg-success' : '' }} {{ $status == 'CANCELLED' ? 'bg-danger' : '' }}">{{ $status }}</span>
-                                        </td>
-                                        <td class="text-center" style="padding:1rem; font-weight:700; color:var(--gray-900);">{{ $count }}</td>
-                                    </tr>
-                                    @endif
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+                <span style="font-weight:700; color:var(--gray-900); font-size:15px;">Perbandingan Pendapatan</span>
             </div>
         </div>
-
-        <!-- Revenue Stats - Chart Visualization -->
-        <div class="col-xl-6" style="margin-bottom:1.75rem;">
-            <div class="card" style="box-shadow:var(--shadow-sm); border-radius:var(--radius-lg); border:1px solid var(--border); height:100%;">
-                <div class="card-header" style="background:white; border-bottom:1px solid var(--border); border-radius:var(--radius-lg) var(--radius-lg) 0 0; padding:1.25rem 1.5rem;">
-                    <div style="display:flex; align-items:center; gap:0.75rem;">
-                        <div style="width:36px; height:36px; background:var(--gray-50); border-radius:var(--radius); display:grid; place-items:center;">
-                            <i class="fas fa-chart-bar" style="font-size:16px; color:var(--gray-600);"></i>
-                        </div>
-                        <span style="font-weight:700; color:var(--gray-900); font-size:15px;">Perbandingan Pendapatan</span>
-                    </div>
-                </div>
-                <div class="card-body" style="padding:1.5rem;">
-                    <canvas id="revenueChart" style="max-height:280px;"></canvas>
-                </div>
-            </div>
+        <div class="card-body" style="padding:1.5rem;">
+            <div id="revenueChart"></div>
         </div>
     </div>
 
@@ -176,119 +134,282 @@
 
 </div>
 
-<!-- Chart.js Library -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<!-- ApexCharts Library -->
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 
 <!-- Font Awesome Icons -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
 <script>
-// Revenue Chart
-const ctx = document.getElementById('revenueChart');
+document.addEventListener('DOMContentLoaded', function () {
+    // Calculate trend line (simple moving trend)
+    const revenueData = [
+        {{ $revenueStats['today'] }},
+        {{ $revenueStats['this_week'] }},
+        {{ $revenueStats['this_month'] }}
+    ];
+    
+    // Create trend line (slightly smoothed)
+    const trendData = revenueData.map((val, idx) => {
+        if (idx === 0) return val;
+        return (revenueData[idx - 1] + val) / 2;
+    });
 
-// Format number to IDR
-function formatIDR(number) {
-    return 'Rp ' + number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-}
-
-new Chart(ctx, {
-    type: 'bar',
-    data: {
-        labels: ['Hari Ini', 'Minggu Ini', 'Bulan Ini'],
-        datasets: [{
-            label: 'Pendapatan',
-            data: [
-                {{ $revenueStats['today'] }},
-                {{ $revenueStats['this_week'] }},
-                {{ $revenueStats['this_month'] }}
-            ],
-            backgroundColor: [
-                'rgba(37, 99, 235, 0.8)',   // Primary blue
-                'rgba(16, 185, 129, 0.8)',  // Success green
-                'rgba(245, 158, 11, 0.8)'   // Warning amber
-            ],
-            borderColor: [
-                'rgb(37, 99, 235)',
-                'rgb(16, 185, 129)',
-                'rgb(245, 158, 11)'
-            ],
-            borderWidth: 2,
-            borderRadius: 8,
-            borderSkipped: false,
-        }]
-    },
-    options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-            legend: {
-                display: false
+    const options = {
+        series: [
+            {
+                name: 'Pendapatan Aktual',
+                type: 'bar',
+                data: revenueData
             },
-            tooltip: {
-                backgroundColor: 'rgba(17, 24, 39, 0.95)',
-                padding: 12,
-                titleFont: {
-                    size: 13,
-                    weight: '600',
-                    family: 'Inter'
+            {
+                name: 'Trend',
+                type: 'line',
+                data: trendData
+            }
+        ],
+        chart: {
+            type: 'line',
+            height: 400,
+            fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, sans-serif',
+            toolbar: {
+                show: false
+            },
+            animations: {
+                enabled: true,
+                easing: 'easeinout',
+                speed: 1400,
+                animateGradually: {
+                    enabled: true,
+                    delay: 250
                 },
-                bodyFont: {
-                    size: 14,
-                    weight: '700',
-                    family: 'Inter'
-                },
-                displayColors: false,
-                callbacks: {
-                    label: function(context) {
-                        return formatIDR(context.parsed.y);
-                    }
+                dynamicAnimation: {
+                    enabled: true,
+                    speed: 500
+                }
+            },
+            dropShadow: {
+                enabled: true,
+                top: 8,
+                left: 0,
+                blur: 14,
+                opacity: 0.2,
+                color: '#000'
+            }
+        },
+        plotOptions: {
+            bar: {
+                borderRadius: 10,
+                borderRadiusApplication: 'end',
+                columnWidth: '45%',
+                distributed: false,
+                dataLabels: {
+                    position: 'top'
                 }
             }
         },
-        scales: {
-            y: {
-                beginAtZero: true,
-                ticks: {
-                    callback: function(value) {
-                        if (value >= 1000000) {
-                            return 'Rp ' + (value / 1000000).toFixed(1) + 'jt';
-                        } else if (value >= 1000) {
-                            return 'Rp ' + (value / 1000).toFixed(0) + 'rb';
-                        }
-                        return 'Rp ' + value;
-                    },
-                    font: {
-                        size: 11,
-                        family: 'Inter',
-                        weight: '500'
-                    },
-                    color: '#6b7280'
-                },
-                grid: {
-                    color: '#f3f4f6',
-                    drawBorder: false
-                },
-                border: {
-                    display: false
+        dataLabels: {
+            enabled: true,
+            enabledOnSeries: [0], // Only on bars
+            formatter: function (val) {
+                if (val >= 1000000) {
+                    return 'Rp ' + (val / 1000000).toFixed(1) + 'jt';
+                } else if (val >= 1000) {
+                    return 'Rp ' + (val / 1000).toFixed(0) + 'rb';
                 }
+                return 'Rp ' + val;
             },
-            x: {
-                ticks: {
-                    font: {
-                        size: 12,
-                        family: 'Inter',
-                        weight: '600'
-                    },
-                    color: '#374151'
-                },
-                grid: {
-                    display: false
-                },
-                border: {
-                    display: false
+            offsetY: -28,
+            style: {
+                fontSize: '13px',
+                fontWeight: 800,
+                colors: ['#334155']
+            },
+            background: {
+                enabled: true,
+                foreColor: '#ffffff',
+                borderRadius: 6,
+                padding: 8,
+                opacity: 1,
+                borderWidth: 2,
+                borderColor: '#e2e8f0',
+                dropShadow: {
+                    enabled: true,
+                    top: 2,
+                    left: 0,
+                    blur: 4,
+                    opacity: 0.15
                 }
             }
-        }
+        },
+        stroke: {
+            width: [0, 4], // Bar: 0, Line: 4px
+            curve: 'smooth',
+            dashArray: [0, 0]
+        },
+        legend: {
+            show: true,
+            position: 'top',
+            horizontalAlign: 'right',
+            floating: true,
+            offsetY: -10,
+            offsetX: -10,
+            fontSize: '13px',
+            fontWeight: 600,
+            markers: {
+                width: 12,
+                height: 12,
+                radius: 4
+            },
+            itemMargin: {
+                horizontal: 12,
+                vertical: 0
+            }
+        },
+        colors: ['#3b82f6', '#f59e0b'], // Blue bars, Amber line
+        fill: {
+            type: ['gradient', 'solid'],
+            gradient: {
+                shade: 'light',
+                type: 'vertical',
+                shadeIntensity: 0.5,
+                gradientToColors: ['#93c5fd', undefined],
+                inverseColors: false,
+                opacityFrom: [1, 1],
+                opacityTo: [0.8, 1],
+                stops: [0, 100],
+                colorStops: [
+                    [
+                        { offset: 0, color: '#3b82f6', opacity: 1 },
+                        { offset: 50, color: '#60a5fa', opacity: 0.95 },
+                        { offset: 100, color: '#93c5fd', opacity: 0.85 }
+                    ]
+                ]
+            }
+        },
+        markers: {
+            size: [0, 6], // Bar: no markers, Line: 6px
+            colors: ['#fff'],
+            strokeColors: '#f59e0b',
+            strokeWidth: 3,
+            hover: {
+                size: 8
+            }
+        },
+        xaxis: {
+            categories: ['Hari Ini', 'Minggu Ini', 'Bulan Ini'],
+            labels: {
+                style: {
+                    colors: '#475569',
+                    fontSize: '14px',
+                    fontWeight: 700
+                }
+            },
+            axisBorder: {
+                show: false
+            },
+            axisTicks: {
+                show: false
+            }
+        },
+        yaxis: {
+            labels: {
+                formatter: function (val) {
+                    if (val >= 1000000) {
+                        return 'Rp ' + (val / 1000000).toFixed(1) + 'jt';
+                    } else if (val >= 1000) {
+                        return 'Rp ' + (val / 1000).toFixed(0) + 'rb';
+                    }
+                    return 'Rp ' + val;
+                },
+                style: {
+                    colors: '#64748b',
+                    fontSize: '12px',
+                    fontWeight: 600
+                }
+            }
+        },
+        grid: {
+            borderColor: '#e2e8f0',
+            strokeDashArray: 5,
+            xaxis: {
+                lines: {
+                    show: false
+                }
+            },
+            yaxis: {
+                lines: {
+                    show: true
+                }
+            },
+            padding: {
+                top: 10,
+                right: 20,
+                bottom: 0,
+                left: 15
+            }
+        },
+        tooltip: {
+            shared: true,
+            intersect: false,
+            theme: 'dark',
+            y: {
+                formatter: function (val) {
+                    return 'Rp ' + val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+                }
+            },
+            style: {
+                fontSize: '14px',
+                fontFamily: 'Inter, sans-serif'
+            },
+            marker: {
+                show: true
+            },
+            x: {
+                show: true
+            }
+        },
+        states: {
+            hover: {
+                filter: {
+                    type: 'lighten',
+                    value: 0.1
+                }
+            },
+            active: {
+                filter: {
+                    type: 'darken',
+                    value: 0.05
+                }
+            }
+        },
+        responsive: [{
+            breakpoint: 768,
+            options: {
+                chart: {
+                    height: 300
+                },
+                plotOptions: {
+                    bar: {
+                        columnWidth: '55%'
+                    }
+                },
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }]
+    };
+
+    const chart = new ApexCharts(document.querySelector('#revenueChart'), options);
+    chart.render();
+
+    // Add custom styling for premium effect
+    const chartContainer = document.querySelector('#revenueChart');
+    if (chartContainer) {
+        chartContainer.style.background = 'linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%)';
+        chartContainer.style.borderRadius = '12px';
+        chartContainer.style.padding = '0.5rem';
     }
 });
 </script>

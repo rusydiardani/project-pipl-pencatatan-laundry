@@ -222,12 +222,11 @@
         <thead>
             <tr>
                 <th style="width: 5%">No</th>
-                <th style="width: 35%">Service</th>
-                <th style="width: 15%" class="text-center">Jadwal</th>
-                <th style="width: 10%" class="text-center">Berat</th>
-                <th style="width: 15%" class="text-right">Harga</th>
-                <th style="width: 15%" class="text-right">Subtotal</th>
-                <th style="width: 10%" class="text-center">Status</th>
+                <th style="width: 40%">Service</th>
+                <th style="width: 18%" class="text-center">Jadwal</th>
+                <th style="width: 12%" class="text-center">Berat</th>
+                <th style="width: 12%" class="text-right">Harga</th>
+                <th style="width: 13%" class="text-right">Subtotal</th>
             </tr>
         </thead>
         <tbody>
@@ -248,11 +247,6 @@
                 <td class="text-center">{{ $service->weight }} kg</td>
                 <td class="text-right">Rp {{ number_format($service->price, 0, ',', '.') }}</td>
                 <td class="text-right" style="font-weight:bold;">Rp {{ number_format($service->weight * $service->price, 0, ',', '.') }}</td>
-                <td class="text-center">
-                    <span class="status-badge status-{{ strtolower($service->status) }}">
-                        {{ $service->status == 'ON PROCESS' ? 'PROCESS' : $service->status }}
-                    </span>
-                </td>
             </tr>
             @endforeach
         </tbody>

@@ -4,13 +4,13 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Service;
-use App\Models\Med;
+use App\Models\Product;
 
 class ProductController extends Controller
 {
     public function index(Request $request)
     {
-        $products = Med::orderBy('name')->get();
+        $products = Product::orderBy('name')->get();
         return view('pages.products.index', compact('products'));
     }
 
@@ -27,20 +27,20 @@ class ProductController extends Controller
             'stock' => 'required|integer|min:0',
         ]);
 
-        Med::create($validated);
+        Product::create($validated);
 
         return redirect()->route('products.index')->with('success', 'Produk berhasil ditambahkan');
     }
 
     public function edit($id)
     {
-        $product = Med::findOrFail($id);
+        $product = Product::findOrFail($id);
         return view('pages.products.edit', compact('product'));
     }
 
     public function update(Request $request, $id)
     {
-        $product = Med::findOrFail($id);
+        $product = Product::findOrFail($id);
         
         $validated = $request->validate([
             'name' => 'required|string|max:255',
@@ -55,7 +55,7 @@ class ProductController extends Controller
 
     public function destroy($id)
     {
-        $product = Med::findOrFail($id);
+        $product = Product::findOrFail($id);
         $product->delete();
 
         return redirect()->route('products.index')->with('success', 'Produk berhasil dihapus');
@@ -86,23 +86,23 @@ class ProductController extends Controller
                     'price' => $s->price,
                 ])->toArray();
 
-            // Meds
-            $medsQuery = Med::query();
+            // Products
+            $productsQuery = Product::query();
             if ($isNumeric) {
-                $medsQuery->where('id', (int)$q);
+                $productsQuery->where('id', (int)$q);
             } else {
-                $medsQuery->where('name', 'like', "%{$q}%");
+                $productsQuery->where('name', 'like', "%{$q}%");
             }
-            $meds = $medsQuery->get(['id','name','price','stock'])
-                ->map(fn($m)=>[
-                    'id'    => $m->id,
-                    'name'  => $m->name,
-                    'type'  => 'med',
-                    'price' => $m->price,
-                    'stock' => $m->stock,
+            $products = $productsQuery->get(['id','name','price','stock'])
+                ->map(fn($p)=>[
+                    'id'    => $p->id,
+                    'name'  => $p->name,
+                    'type'  => 'product',
+                    'price' => $p->price,
+                    'stock' => $p->stock,
                 ])->toArray();
 
-            return response()->json(array_merge($services, $meds));
+            return response()->json(array_merge($services, $products));
         } catch (\Throwable $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }

@@ -18,13 +18,17 @@
 
     <!-- Filter Card -->
     <div class="card" style="box-shadow:var(--shadow-sm); border-radius:var(--radius-lg); border:1px solid var(--border);">
-        <div class="card-header" style="background:white; border-bottom:1px solid var(--border); border-radius:var(--radius-lg) var(--radius-lg) 0 0; padding:1.25rem 1.5rem;">
+        <div class="card-header" style="background:white; border-bottom:1px solid var(--border); border-radius:var(--radius-lg) var(--radius-lg) 0 0; padding:1.25rem 1.5rem; position:relative;">
             <div style="display:flex; align-items:center; gap:0.75rem;">
                 <div style="width:36px; height:36px; background:var(--gray-50); border-radius:var(--radius); display:grid; place-items:center;">
                     <i class="fas fa-filter" style="font-size:16px; color:var(--gray-600);"></i>
                 </div>
                 <span style="font-weight:700; color:var(--gray-900); font-size:15px;">Filter Laporan</span>
             </div>
+            <!-- Info Button - Absolute Position Right -->
+            <button type="button" onclick="toggleHelpModal()" style="position:absolute; top:1.25rem; right:1.5rem; width:32px; height:32px; background:var(--primary-pale); border:1px solid var(--primary); border-radius:var(--radius); display:grid; place-items:center; cursor:pointer; transition:all 0.2s;">
+                <i class="fas fa-info-circle" style="font-size:16px; color:var(--primary);"></i>
+            </button>
         </div>
         <div class="card-body" style="padding:1.5rem;">
             <form action="{{ route('reports.generate') }}" method="GET" target="_blank">
@@ -67,26 +71,149 @@
         </div>
     </div>
 
-    <!-- Info Card -->
-    <div class="card" style="box-shadow:var(--shadow-sm); border-radius:var(--radius-lg); border:1px solid var(--primary-pale); background:var(--primary-pale); margin-top:1.5rem;">
-        <div class="card-body" style="padding:1.25rem 1.5rem;">
-            <div style="display:flex; align-items:flex-start; gap:1rem;">
-                <div style="width:40px; height:40px; background:white; border-radius:var(--radius); display:grid; place-items:center; flex-shrink:0;">
-                    <i class="fas fa-info-circle" style="font-size:20px; color:var(--primary);"></i>
+    <!-- Help Modal -->
+    <div id="helpModal" class="modal-overlay" style="display:none;">
+        <div class="modal-container">
+            <div class="modal-header">
+                <div style="display:flex; align-items:center; gap:0.75rem;">
+                    <div style="width:40px; height:40px; background:var(--primary-pale); border-radius:var(--radius); display:grid; place-items:center;">
+                        <i class="fas fa-info-circle" style="font-size:20px; color:var(--primary);"></i>
+                    </div>
+                    <h3 style="margin:0; font-size:18px; font-weight:700; color:var(--gray-900);">Petunjuk Penggunaan</h3>
                 </div>
-                <div>
-                    <div style="font-weight:600; color:var(--primary-dark); margin-bottom:0.25rem; font-size:14px;">Petunjuk Penggunaan</div>
-                    <ul style="margin:0; padding-left:1.25rem; color:var(--primary-dark); font-size:13px; line-height:1.6;">
-                        <li>Pilih rentang tanggal yang ingin Anda lihat</li>
-                        <li>Filter berdasarkan status transaksi (opsional)</li>
-                        <li>Klik "Generate Laporan" untuk melihat hasil</li>
-                        <li>Laporan akan terbuka di tab baru dan siap untuk dicetak</li>
-                    </ul>
-                </div>
+                <button onclick="toggleHelpModal()" class="modal-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <ul style="margin:0; padding-left:1.5rem; color:var(--gray-700); font-size:14px; line-height:1.8;">
+                    <li style="margin-bottom:0.5rem;">Pilih rentang tanggal yang ingin Anda lihat</li>
+                    <li style="margin-bottom:0.5rem;">Filter berdasarkan status transaksi (opsional)</li>
+                    <li style="margin-bottom:0.5rem;">Klik "Generate Laporan" untuk melihat hasil</li>
+                    <li>Laporan akan terbuka di tab baru dan siap untuk dicetak</li>
+                </ul>
             </div>
         </div>
     </div>
 </div>
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+/* Modal Styles */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn 0.2s ease;
+}
+
+.modal-container {
+    background: white;
+    border-radius: var(--radius-lg);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    max-width: 500px;
+    width: 90%;
+    max-height: 90vh;
+    overflow: hidden;
+    animation: slideUp 0.3s ease;
+}
+
+.modal-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.modal-body {
+    padding: 1.5rem;
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+.modal-close {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius);
+    border: none;
+    background: var(--gray-100);
+    color: var(--gray-600);
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+    transition: all 0.2s;
+}
+
+.modal-close:hover {
+    background: var(--gray-200);
+    color: var(--gray-900);
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideUp {
+    from { 
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to { 
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Info Button Hover Effect */
+button:has(.fa-info-circle):hover {
+    background: var(--primary) !important;
+    transform: scale(1.05);
+}
+
+button:has(.fa-info-circle):hover i {
+    color: white !important;
+}
+</style>
+
+<script>
+function toggleHelpModal() {
+    const modal = document.getElementById('helpModal');
+    if (modal.style.display === 'none' || !modal.style.display) {
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    } else {
+        modal.style.display = 'none';
+        document.body.style.overflow = 'auto';
+    }
+}
+
+// Close modal on outside click
+document.addEventListener('click', function(e) {
+    const modal = document.getElementById('helpModal');
+    if (e.target === modal) {
+        toggleHelpModal();
+    }
+});
+
+// Close modal on ESC key
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        const modal = document.getElementById('helpModal');
+        if (modal.style.display === 'flex') {
+            toggleHelpModal();
+        }
+    }
+});
+</script>
 @endsection

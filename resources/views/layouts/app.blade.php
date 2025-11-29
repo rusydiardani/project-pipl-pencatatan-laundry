@@ -16,6 +16,7 @@
     /* kalau belum pakai Tailwind, pastikan util hidden ada */
     .hidden{display:none!important;}
   </style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body class="bg-page">
   @include('partials.navbar')

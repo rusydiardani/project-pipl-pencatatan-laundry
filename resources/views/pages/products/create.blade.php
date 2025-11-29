@@ -2,51 +2,83 @@
 
 @section('content')
 <div class="container-fluid px-4">
-    <h1 class="mt-4">Tambah Produk</h1>
-    <ol class="breadcrumb mb-4">
-        <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Dashboard</a></li>
-        <li class="breadcrumb-item"><a href="{{ route('products.index') }}">Produk</a></li>
-        <li class="breadcrumb-item active">Tambah</li>
-    </ol>
-
-    <div class="card mb-4">
-        <div class="card-header">
-            <i class="fas fa-box-open me-1"></i>
-            Form Produk Baru
+    <!-- Header -->
+    <div style="display:flex; justify-content:space-between; align-items:center; margin:2rem 0 2rem; padding-bottom:1.5rem; border-bottom:1px solid var(--border);">
+        <div>
+            <h1 style="font-size:28px; font-weight:700; margin:0 0 0.375rem; color:var(--gray-900); letter-spacing:-0.3px;">
+                Tambah Produk
+            </h1>
+            <p style="color:var(--text-secondary); margin:0; font-size:14px; font-weight:500;">
+                Input data produk baru ke inventaris
+            </p>
         </div>
-        <div class="card-body">
-            <form action="{{ route('products.store') }}" method="POST">
-                @csrf
-                <div class="mb-3">
-                    <label for="name" class="form-label">Nama Produk <span class="text-danger">*</span></label>
-                    <input type="text" class="form-control @error('name') is-invalid @enderror" id="name" name="name" value="{{ old('name') }}" required>
-                    @error('name')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
-                </div>
+        <a href="{{ route('products.index') }}" class="btn" style="height:40px; padding:0 1.5rem; background:var(--gray-100); border:1px solid var(--border); font-size:14px;">
+            <i class="fas fa-arrow-left" style="font-size:12px;"></i> Kembali
+        </a>
+    </div>
 
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        <label for="price" class="form-label">Harga (Rp) <span class="text-danger">*</span></label>
-                        <input type="number" class="form-control @error('price') is-invalid @enderror" id="price" name="price" value="{{ old('price') }}" min="0" required>
-                        @error('price')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-                    <div class="col-md-6">
-                        <label for="stock" class="form-label">Stok Awal <span class="text-danger">*</span></label>
-                        <input type="number" class="form-control @error('stock') is-invalid @enderror" id="stock" name="stock" value="{{ old('stock', 0) }}" min="0" required>
-                        @error('stock')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card" style="box-shadow:var(--shadow-sm); border-radius:var(--radius-lg); border:1px solid var(--border);">
+                <div class="card-header" style="background:white; border-bottom:1px solid var(--border); border-radius:var(--radius-lg) var(--radius-lg) 0 0; padding:1.25rem 1.5rem;">
+                    <div style="display:flex; align-items:center; gap:0.75rem;">
+                        <div style="width:36px; height:36px; background:var(--gray-50); border-radius:var(--radius); display:grid; place-items:center;">
+                            <i class="fas fa-plus" style="font-size:16px; color:var(--gray-600);"></i>
+                        </div>
+                        <span style="font-weight:700; color:var(--gray-900); font-size:15px;">Form Produk Baru</span>
                     </div>
                 </div>
+                <div class="card-body" style="padding:1.5rem;">
+                    <form action="{{ route('products.store') }}" method="POST">
+                        @csrf
+                        
+                        <!-- Nama Produk -->
+                        <div style="margin-bottom:1.5rem;">
+                            <label for="name" style="display:block; font-size:13px; font-weight:600; color:var(--gray-700); margin-bottom:0.5rem;">
+                                Nama Produk <span style="color:var(--danger);">*</span>
+                            </label>
+                            <input type="text" class="input @error('name') is-invalid @enderror" id="name" name="name" value="{{ old('name') }}" required placeholder="Contoh: Deterjen Cair, Pewangi, dll" style="width:100%;">
+                            @error('name')
+                                <div style="color:var(--danger); font-size:12px; margin-top:0.25rem;">{{ $message }}</div>
+                            @enderror
+                        </div>
 
-                <div class="d-flex justify-content-between">
-                    <a href="{{ route('products.index') }}" class="btn btn-secondary">Kembali</a>
-                    <button type="submit" class="btn btn-primary">Simpan Produk</button>
+                        <div class="row">
+                            <!-- Harga -->
+                            <div class="col-md-6" style="margin-bottom:1.5rem;">
+                                <label for="price" style="display:block; font-size:13px; font-weight:600; color:var(--gray-700); margin-bottom:0.5rem;">
+                                    Harga Satuan (Rp) <span style="color:var(--danger);">*</span>
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text" style="background:var(--gray-50); border-color:var(--border); color:var(--gray-600); font-weight:600;">Rp</span>
+                                    <input type="number" class="input @error('price') is-invalid @enderror" id="price" name="price" value="{{ old('price') }}" min="0" required placeholder="0" style="width:100%;">
+                                </div>
+                                @error('price')
+                                    <div style="color:var(--danger); font-size:12px; margin-top:0.25rem;">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <!-- Stok -->
+                            <div class="col-md-6" style="margin-bottom:1.5rem;">
+                                <label for="stock" style="display:block; font-size:13px; font-weight:600; color:var(--gray-700); margin-bottom:0.5rem;">
+                                    Stok Awal <span style="color:var(--danger);">*</span>
+                                </label>
+                                <input type="number" class="input @error('stock') is-invalid @enderror" id="stock" name="stock" value="{{ old('stock', 0) }}" min="0" required style="width:100%;">
+                                @error('stock')
+                                    <div style="color:var(--danger); font-size:12px; margin-top:0.25rem;">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div style="padding-top:1.5rem; border-top:1px solid var(--border); display:flex; justify-content:flex-end;">
+                            <button type="submit" class="btn btn-primary" style="height:42px; padding:0 2rem; font-size:14px; font-weight:600;">
+                                <i class="fas fa-save me-2"></i> Simpan Produk
+                            </button>
+                        </div>
+                    </form>
                 </div>
-            </form>
+            </div>
         </div>
     </div>
 </div>
