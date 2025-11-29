@@ -34,7 +34,7 @@ class TransactionController extends Controller
             'items' => 'required|array|min:1',
             'items.*.product_id' => 'required|integer',
             'items.*.product_name' => 'required|string',
-            'items.*.product_type' => 'required|in:service,med',
+            'items.*.product_type' => 'required|in:service,product',
             'items.*.weight' => 'required|numeric|min:0.1',
             'items.*.price' => 'required|numeric|min:0',
             // 'items.*.duration' => 'nullable|string',
@@ -132,7 +132,7 @@ class TransactionController extends Controller
         DB::raw('MIN(client_name) as client_name'),
         DB::raw('SUM(weight * price) as total'),
         DB::raw('COUNT(*) as items_count'),
-        DB::raw("SUM(CASE WHEN status = 'ON PROCESS' THEN 1 ELSE 0 END) as on_process_count")
+        DB::raw('MIN(status) as status') // Ambil status (asumsi status sama per ref_no setelah updateByRef)
     )
     ->groupBy('ref_no')
     ->orderBy(DB::raw('MIN(created_at)'), 'desc');
@@ -185,7 +185,7 @@ public function destroyByRef(string $ref_no)
     ];
 
     $services = $items->where('product_type', 'service')->values();
-    $meds     = $items->where('product_type', 'med')->values();
+    $meds     = $items->where('product_type', 'product')->values();
 
     $total = $items->reduce(fn($c,$it)=> $c + ($it->weight * $it->price), 0);
 

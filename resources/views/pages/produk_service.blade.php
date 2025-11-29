@@ -57,13 +57,9 @@
                                             <a href="{{ route('service.edit', $service->id) }}" class="btn btn-sm" style="height:32px; padding:0 0.875rem; font-size:13px; background:var(--warning-pale); color:var(--warning); border:1px solid var(--warning);">
                                                 <i class="fas fa-edit"></i>
                                             </a>
-                                            <form action="{{ route('service.destroy', $service->id) }}" method="POST" style="display:inline; margin:0;" onsubmit="return confirm('Yakin ingin menghapus service ini?')">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="btn btn-sm" style="height:32px; padding:0 0.875rem; font-size:13px; background:var(--danger-pale); color:var(--danger); border:1px solid var(--danger);">
-                                                    <i class="fas fa-trash"></i>
-                                                </button>
-                                            </form>
+                                            <button type="button" onclick="openDeleteModal('{{ route('service.destroy', $service->id) }}', '{{ $service->name }}')" class="btn btn-sm" style="height:32px; padding:0 0.875rem; font-size:13px; background:var(--danger-pale); color:var(--danger); border:1px solid var(--danger);">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
                                         </div>
                                     </td>
                                 </tr>
@@ -135,4 +131,54 @@
 </div>
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<!-- Delete Confirmation Modal -->
+<div id="deleteModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:10000; align-items:center; justify-content:center;">
+    <div style="background:white; padding:2rem; border-radius:var(--radius-lg); width:90%; max-width:400px; box-shadow:var(--shadow-lg); text-align:center;">
+        <div style="width:60px; height:60px; background:var(--danger-pale); color:var(--danger); border-radius:50%; display:grid; place-items:center; margin:0 auto 1.5rem; font-size:24px;">
+            <i class="fas fa-trash-alt"></i>
+        </div>
+        <h3 style="font-size:18px; font-weight:700; color:var(--gray-900); margin-bottom:0.5rem;">Hapus Service?</h3>
+        <p style="color:var(--text-secondary); font-size:14px; margin-bottom:2rem; line-height:1.5;">
+            Apakah Anda yakin ingin menghapus service <strong id="deleteName" style="color:var(--gray-900);"></strong>? 
+            Tindakan ini tidak dapat dibatalkan.
+        </p>
+        <div style="display:flex; gap:1rem; justify-content:center;">
+            <button onclick="closeDeleteModal()" class="btn" style="padding:0.75rem 1.5rem; background:var(--gray-100); color:var(--gray-700); border:none; font-weight:600;">
+                Batal
+            </button>
+            <form id="deleteForm" method="POST" style="margin:0;">
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="btn" style="padding:0.75rem 1.5rem; background:var(--danger); color:white; border:none; font-weight:600;">
+                    Ya, Hapus
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+function openDeleteModal(url, name) {
+    const modal = document.getElementById('deleteModal');
+    const nameSpan = document.getElementById('deleteName');
+    const form = document.getElementById('deleteForm');
+    
+    nameSpan.textContent = name;
+    form.action = url;
+    
+    modal.style.display = 'flex';
+}
+
+function closeDeleteModal() {
+    document.getElementById('deleteModal').style.display = 'none';
+}
+
+// Close on outside click
+document.getElementById('deleteModal').addEventListener('click', (e) => {
+    if (e.target === document.getElementById('deleteModal')) {
+        closeDeleteModal();
+    }
+});
+</script>
 @endsection

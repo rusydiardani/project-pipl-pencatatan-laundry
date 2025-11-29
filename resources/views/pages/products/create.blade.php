@@ -49,10 +49,7 @@
                                 <label for="price" style="display:block; font-size:13px; font-weight:600; color:var(--gray-700); margin-bottom:0.5rem;">
                                     Harga Satuan (Rp) <span style="color:var(--danger);">*</span>
                                 </label>
-                                <div class="input-group">
-                                    <span class="input-group-text" style="background:var(--gray-50); border-color:var(--border); color:var(--gray-600); font-weight:600;">Rp</span>
-                                    <input type="number" class="input @error('price') is-invalid @enderror" id="price" name="price" value="{{ old('price') }}" min="0" required placeholder="0" style="width:100%;">
-                                </div>
+                                <input type="number" class="input @error('price') is-invalid @enderror" id="price" name="price" value="{{ old('price') }}" min="0" required placeholder="Contoh: 10000" style="width:100%;">
                                 @error('price')
                                     <div style="color:var(--danger); font-size:12px; margin-top:0.25rem;">{{ $message }}</div>
                                 @enderror

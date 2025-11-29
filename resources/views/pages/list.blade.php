@@ -77,11 +77,16 @@
                             <td style="padding:1rem 1.5rem; font-weight:500; color:var(--gray-900);">{{ $t->client_name }}</td>
                             <td style="padding:1rem 1.5rem; font-weight:700; color:var(--success); text-align:right;">Rp {{ number_format($t->total, 0, ',', '.') }}</td>
                             <td style="padding:1rem 1.5rem;">
-                                @if(($t->on_process_count ?? 0) > 0)
-                                    <span class="badge bg-warning">{{ $t->on_process_count }} ON PROCESS</span>
-                                @else
-                                    <span class="badge bg-success">COMPLETED</span>
-                                @endif
+                                @php
+                                    $statusColor = match($t->status) {
+                                        'ON PROCESS' => 'warning',
+                                        'COMPLETED' => 'success',
+                                        'CANCELLED' => 'danger',
+                                        'NEW' => 'primary',
+                                        default => 'info'
+                                    };
+                                @endphp
+                                <span class="badge bg-{{ $statusColor }}">{{ $t->status }}</span>
                             </td>
                             <td style="padding:1rem 1.5rem;">
                                 <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
@@ -94,13 +99,11 @@
                                     <a href="{{ route('transactions.print', $t->ref_no) }}" target="_blank" class="btn btn-sm" style="height:32px; padding:0 0.875rem; font-size:13px; background:var(--success-pale); color:var(--success); border:1px solid var(--success);">
                                         <i class="fas fa-print"></i>
                                     </a>
-                                    <form action="{{ route('transactions.destroyByRef', $t->ref_no) }}" method="POST" style="display:inline; margin:0;" onsubmit="return confirm('Hapus transaksi {{ $t->ref_no}} ({{ $t->items_count }} item)?');">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-sm" style="height:32px; padding:0 0.875rem; font-size:13px; background:var(--danger-pale); color:var(--danger); border:1px solid var(--danger);">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                    </form>
+                                    @if(auth()->user()->isAdmin())
+                                    <button type="button" onclick="openDeleteModal('{{ route('transactions.destroyByRef', $t->ref_no) }}', '{{ $t->ref_no }}')" class="btn btn-sm" style="height:32px; padding:0 0.875rem; font-size:13px; background:var(--danger-pale); color:var(--danger); border:1px solid var(--danger);">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                    @endif
                                 </div>
                             </td>
                         </tr>
@@ -135,4 +138,72 @@
 </div>
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<!-- Delete Confirmation Modal -->
+<div id="deleteModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:10000; align-items:center; justify-content:center;">
+    <div style="background:white; padding:2rem; border-radius:var(--radius-lg); width:90%; max-width:400px; box-shadow:var(--shadow-lg); text-align:center;">
+        <div style="width:60px; height:60px; background:var(--danger-pale); color:var(--danger); border-radius:50%; display:grid; place-items:center; margin:0 auto 1.5rem; font-size:24px;">
+            <i class="fas fa-trash-alt"></i>
+        </div>
+        <h3 style="font-size:18px; font-weight:700; color:var(--gray-900); margin-bottom:0.5rem;">Hapus Transaksi?</h3>
+        <p style="color:var(--text-secondary); font-size:14px; margin-bottom:2rem; line-height:1.5;">
+            Apakah Anda yakin ingin menghapus transaksi <strong id="deleteRefNo" style="color:var(--gray-900);"></strong>? 
+            Tindakan ini tidak dapat dibatalkan.
+        </p>
+        <div style="display:flex; gap:1rem; justify-content:center;">
+            <button onclick="closeDeleteModal()" class="btn" style="padding:0.75rem 1.5rem; background:var(--gray-100); color:var(--gray-700); border:none; font-weight:600;">
+                Batal
+            </button>
+            <form id="deleteForm" method="POST" style="margin:0;">
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="btn" style="padding:0.75rem 1.5rem; background:var(--danger); color:white; border:none; font-weight:600;">
+                    Ya, Hapus
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+function confirmDelete(refNo, itemCount) {
+    const modal = document.getElementById('deleteModal');
+    const refSpan = document.getElementById('deleteRefNo');
+    const form = document.getElementById('deleteForm');
+    
+    // Set content
+    refSpan.textContent = refNo;
+    
+    // Set action URL
+    // Note: We need to construct the route dynamically. 
+    // Since we can't easily use route() helper for dynamic ID in JS without a placeholder,
+    // we'll rely on the base URL structure or a data attribute.
+    // Let's use a cleaner approach: pass the full URL to the function.
+    
+    // But wait, the previous code loop had the route. 
+    // Let's update the button to pass the URL.
+}
+
+function openDeleteModal(url, refNo) {
+    const modal = document.getElementById('deleteModal');
+    const refSpan = document.getElementById('deleteRefNo');
+    const form = document.getElementById('deleteForm');
+    
+    refSpan.textContent = refNo;
+    form.action = url;
+    
+    modal.style.display = 'flex';
+}
+
+function closeDeleteModal() {
+    document.getElementById('deleteModal').style.display = 'none';
+}
+
+// Close on outside click
+document.getElementById('deleteModal').addEventListener('click', (e) => {
+    if (e.target === document.getElementById('deleteModal')) {
+        closeDeleteModal();
+    }
+});
+</script>
 @endsection

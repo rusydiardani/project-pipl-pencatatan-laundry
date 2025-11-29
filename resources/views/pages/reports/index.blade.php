@@ -31,7 +31,7 @@
             </button>
         </div>
         <div class="card-body" style="padding:1.5rem;">
-            <form action="{{ route('reports.generate') }}" method="GET" target="_blank">
+            <form id="filterForm" action="{{ route('reports.generate') }}" method="GET" target="_blank">
                 <div class="row" style="margin-bottom:1.25rem;">
                     <div class="col-md-4" style="margin-bottom:1rem;">
                         <label for="start_date" style="display:block; font-size:13px; font-weight:600; color:var(--gray-700); margin-bottom:0.5rem;">
@@ -63,11 +63,38 @@
                     <button type="submit" class="btn btn-primary" style="height:42px; padding:0 1.75rem;">
                         <i class="fas fa-file-alt"></i> Generate Laporan
                     </button>
-                    <button type="button" onclick="document.querySelector('form').reset()" class="btn" style="height:42px; padding:0 1.75rem; background:var(--gray-100); border:1px solid var(--border);">
+                    <button type="button" onclick="resetFilter()" class="btn" style="height:42px; padding:0 1.75rem; background:var(--gray-100); border:1px solid var(--border);">
                         <i class="fas fa-redo"></i> Reset
                     </button>
                 </div>
             </form>
+
+<script>
+function resetFilter() {
+    // Set default dates
+    const today = new Date();
+    const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+    
+    // Format to YYYY-MM-DD
+    const formatDate = (date) => {
+        const d = new Date(date);
+        let month = '' + (d.getMonth() + 1);
+        let day = '' + d.getDate();
+        const year = d.getFullYear();
+
+        if (month.length < 2) month = '0' + month;
+        if (day.length < 2) day = '0' + day;
+
+        return [year, month, day].join('-');
+    };
+
+    document.getElementById('start_date').value = formatDate(firstDay);
+    document.getElementById('end_date').value = formatDate(today);
+    document.getElementById('status').value = 'ALL';
+    
+    Toast.info('Filter laporan telah di-reset ke default.');
+}
+</script>
         </div>
     </div>
 

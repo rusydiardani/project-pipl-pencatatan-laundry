@@ -32,6 +32,15 @@
                     </div>
                 </div>
                 <div class="card-body" style="padding:1.5rem;">
+                    @if ($errors->any())
+                        <div style="background:var(--danger-pale); border:1px solid var(--danger); border-radius:var(--radius-md); padding:1rem; margin-bottom:1.5rem;">
+                            <ul style="margin:0; padding-left:1.5rem; color:var(--danger);">
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
                     <form action="{{ route('transactions.updateByRef', $transaction->ref_no) }}" method="POST">
                         @csrf
                         @method('PUT')

@@ -14,7 +14,7 @@
 
         <div class="form-row">
             <label for="username">Username</label>
-            <input id="username" name="username" class="input" type="text" placeholder="Masukkan username" required>
+            <input id="username" name="username" class="input" type="text" placeholder="Masukkan username" value="{{ old('username') }}" required>
         </div>
 
         <div class="form-row">

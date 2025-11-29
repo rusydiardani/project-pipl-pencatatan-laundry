@@ -25,13 +25,20 @@ return Application::configure(basePath: dirname(__DIR__))
         | Middleware ini akan dijalankan di setiap request.
         | Termasuk session, CSRF, validasi input, dll.
         */
-        $middleware->use([
-            TrimStrings::class,
-            ConvertEmptyStringsToNull::class,
-            StartSession::class,
-            ShareErrorsFromSession::class,
-            \App\Http\Middleware\VerifyCsrfToken::class,
-        ]);
+        /*
+        |--------------------------------------------------------------------------
+        | Global Middleware
+        |--------------------------------------------------------------------------
+        | Middleware ini akan dijalankan di setiap request.
+        | Termasuk session, CSRF, validasi input, dll.
+        */
+        // $middleware->use([
+        //     // TrimStrings::class,
+        //     // ConvertEmptyStringsToNull::class,
+        //     // StartSession::class,
+        //     // ShareErrorsFromSession::class,
+        //     // \App\Http\Middleware\VerifyCsrfToken::class,
+        // ]);
 
         /*
         |--------------------------------------------------------------------------

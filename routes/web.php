@@ -25,6 +25,11 @@ Route::get('/', function () {
     return auth()->check() ? redirect()->route('dashboard') : view('pages.login');
 })->name('login');
 
+// Test Toast Route
+Route::get('/test-toast', function () {
+    return redirect()->route('dashboard')->with('success', 'Ini adalah pesan tes Toast! 🚀');
+});
+
 // Proses login
 Route::post('/login', [AuthController::class, 'login'])
     ->name('login.process')
@@ -69,54 +74,14 @@ Route::middleware('auth')->group(function () {
     */
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-
     /*
     |--------------------------------------------------------------------------
-    | CRUD Obat (Meds)
+    | CRUD Transaksi (Shared: Admin & Staff)
     |--------------------------------------------------------------------------
-    |
-    | Controller: MedController
-    | Resource: index, create, store, show, edit, update, destroy
-    |
     */
-    Route::resource('med', MedController::class);
-
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | CRUD Service
-    |--------------------------------------------------------------------------
-    |
-    | Controller: ServiceController
-    |
-    */
-    Route::resource('service', ServiceController::class);
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | CRUD Transaksi
-    |--------------------------------------------------------------------------
-    |
-    | Controller: TransactionController
-    | Digunakan untuk gabungan antara produk (obat / service)
-    |
-    */
-    Route::resource('transaction', TransactionController::class);
+    Route::resource('transaction', TransactionController::class)->except(['destroy']);
     Route::post('/transactions/store', [TransactionController::class, 'store'])->name('transactions.store');
-
-    /*
-    |--------------------------------------------------------------------------
-    | CRUD Staff dan User (hanya admin)
-    |--------------------------------------------------------------------------
-    */
-    Route::middleware('isAdmin')->group(function () {
-        Route::resource('staff', StaffController::class);
-        Route::resource('staff', StaffController::class);
-        Route::resource('user', UserController::class); // pastikan ada controller UserController
-        Route::resource('customers', CustomerController::class);
-        Route::resource('products', ProductController::class);
+    
     // List Page
     Route::get('/list', [TransactionController::class, 'listPage'])->name('list.page');
     
@@ -127,38 +92,35 @@ Route::middleware('auth')->group(function () {
     Route::get('/transactions/{ref_no}/edit', [TransactionController::class, 'edit'])->name('transactions.edit');
     Route::put('/transactions/{ref_no}', [TransactionController::class, 'updateByRef'])->name('transactions.updateByRef');
     
-    // Delete by Ref No
-    Route::delete('/transactions/ref/{ref_no}', [TransactionController::class, 'destroyByRef'])->name('transactions.destroyByRef');
-  Route::get('/detail/{ref_no}', [\App\Http\Controllers\TransactionController::class, 'detailByRef'])
-->name('transactions.detail');
+    // Detail
+    Route::get('/detail/{ref_no}', [\App\Http\Controllers\TransactionController::class, 'detailByRef'])->name('transactions.detail');
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | ADMIN ONLY ROUTES
+    |--------------------------------------------------------------------------
+    */
+    Route::middleware('isAdmin')->group(function () {
+        // Master Data
+        Route::resource('service', ServiceController::class);
+        Route::resource('products', ProductController::class);
+        Route::resource('customers', CustomerController::class);
+        
+        // User Management
+        Route::resource('staff', StaffController::class);
+        Route::resource('user', UserController::class);
+
+        // Delete Transaction (Admin Only)
+        Route::delete('/transactions/ref/{ref_no}', [TransactionController::class, 'destroyByRef'])->name('transactions.destroyByRef');
+        
+        // Reports (Admin Only)
+        Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
+        Route::get('/reports/generate', [ReportController::class, 'generate'])->name('reports.generate');
     });
 
 
-   Route::match(['GET','POST'], '/transactions/recommend', [TransactionController::class, 'recommend'])
-    ->name('transactions.recommend');
 
-
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | Static Pages (Halaman Tampilan)
-    |--------------------------------------------------------------------------
-    */
-    /*
-    |--------------------------------------------------------------------------
-    | Laporan
-    |--------------------------------------------------------------------------
-    */
-    Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
-    Route::get('/reports/generate', [ReportController::class, 'generate'])->name('reports.generate');
-
-    /*
-    |--------------------------------------------------------------------------
-    | Static Pages (Halaman Tampilan)
-    |--------------------------------------------------------------------------
-    */
-    Route::view('/draft', 'pages.draft')->name('draft.page');
 
     /*
     |--------------------------------------------------------------------------
@@ -166,8 +128,4 @@ Route::middleware('auth')->group(function () {
     |--------------------------------------------------------------------------
     */
     Route::get('/buat', [TransactionController::class, 'createPage'])->name('buat.page');
-    // Route::view('/produk/service', 'pages.produk_service')->name('produk.service');
-    // Route::view('/produk/obat', 'pages.produk_obat')->name('produk.obat');
-
-
 });

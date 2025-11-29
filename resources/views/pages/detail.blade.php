@@ -175,8 +175,48 @@
                 </table>
             </div>
         </div>
+        </div>
     </div>
-</div>
+
+    <!-- Product Items Table (if any) -->
+    @if($meds->isNotEmpty())
+    <div class="card" style="box-shadow:var(--shadow-sm); border-radius:var(--radius-lg); border:1px solid var(--border); margin-bottom:2rem;">
+        <div class="card-header" style="background:white; border-bottom:1px solid var(--border); border-radius:var(--radius-lg) var(--radius-lg) 0 0; padding:1.25rem 1.5rem;">
+            <div style="display:flex; align-items:center; gap:0.75rem;">
+                <div style="width:36px; height:36px; background:var(--gray-50); border-radius:var(--radius); display:grid; place-items:center;">
+                    <i class="fas fa-box" style="font-size:16px; color:var(--gray-600);"></i>
+                </div>
+                <span style="font-weight:700; color:var(--gray-900); font-size:15px;">Daftar Produk</span>
+            </div>
+        </div>
+        <div class="card-body" style="padding:0;">
+            <div class="table-responsive">
+                <table class="table" style="margin:0;">
+                    <thead style="background:var(--gray-50);">
+                        <tr>
+                            <th style="font-size:12px; text-transform:uppercase; letter-spacing:0.5px; padding:0.875rem 1.5rem; color:var(--gray-600); font-weight:600; border-bottom:1px solid var(--border);">No</th>
+                            <th style="font-size:12px; text-transform:uppercase; letter-spacing:0.5px; padding:0.875rem 1.5rem; color:var(--gray-600); font-weight:600; border-bottom:1px solid var(--border);">Produk</th>
+                            <th style="font-size:12px; text-transform:uppercase; letter-spacing:0.5px; padding:0.875rem 1.5rem; color:var(--gray-600); font-weight:600; border-bottom:1px solid var(--border);">Qty</th>
+                            <th style="font-size:12px; text-transform:uppercase; letter-spacing:0.5px; padding:0.875rem 1.5rem; color:var(--gray-600); font-weight:600; border-bottom:1px solid var(--border);">Harga</th>
+                            <th style="font-size:12px; text-transform:uppercase; letter-spacing:0.5px; padding:0.875rem 1.5rem; color:var(--gray-600); font-weight:600; border-bottom:1px solid var(--border);">Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($meds as $index => $item)
+                        <tr style="border-bottom:1px solid var(--gray-100);">
+                            <td style="padding:1rem 1.5rem; font-size:14px; color:var(--gray-700);">{{ $index + 1 }}</td>
+                            <td style="padding:1rem 1.5rem; font-weight:600; color:var(--gray-900);">{{ $item->product_name }}</td>
+                            <td style="padding:1rem 1.5rem; font-size:14px; color:var(--gray-700);">{{ $item->weight }}</td>
+                            <td style="padding:1rem 1.5rem; font-size:14px; color:var(--gray-700);">Rp {{ number_format($item->price, 0, ',', '.') }}</td>
+                            <td style="padding:1rem 1.5rem; font-weight:700; color:var(--success); font-size:15px;">Rp {{ number_format($item->weight * $item->price, 0, ',', '.') }}</td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    @endif
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 

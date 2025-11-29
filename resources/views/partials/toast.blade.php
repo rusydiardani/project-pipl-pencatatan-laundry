@@ -69,25 +69,26 @@ const Toast = {
 
 // Auto-show Laravel session messages
 document.addEventListener('DOMContentLoaded', function() {
+
     @if(session('success'))
-        Toast.success('{{ session('success') }}');
+        Toast.success({!! json_encode(session('success')) !!});
     @endif
 
     @if(session('error'))
-        Toast.error('{{ session('error') }}');
+        Toast.error({!! json_encode(session('error')) !!});
     @endif
 
     @if(session('warning'))
-        Toast.warning('{{ session('warning') }}');
+        Toast.warning({!! json_encode(session('warning')) !!});
     @endif
 
     @if(session('info'))
-        Toast.info('{{ session('info') }}');
+        Toast.info({!! json_encode(session('info')) !!});
     @endif
 
     @if($errors->any())
         @foreach($errors->all() as $error)
-            Toast.error('{{ $error }}');
+            Toast.error({!! json_encode($error) !!});
         @endforeach
     @endif
 });

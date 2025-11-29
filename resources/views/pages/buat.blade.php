@@ -198,6 +198,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // Expose items to DOM for collection
     function createTab() {
         tabCounter++;
         const tabId = `tab-${tabCounter}`;
@@ -321,20 +322,28 @@ document.addEventListener('DOMContentLoaded', () => {
             const price = parseFloat(priceInput.value) || 0;
             subtotalInput.value = (weight * price).toFixed(0);
         });
-
+        
         // Add Item Button
         const btnAddItem = tabContent.querySelector('.btn-add-item');
         const summaryBody = tabContent.querySelector('.summary-body');
         const totalAmount = tabContent.querySelector('.total-amount');
-        let items = [];
+        
+        // Store items on the DOM element for easy access
+        tabContent.items = []; 
 
         btnAddItem.addEventListener('click', () => {
+            // ... (keep existing validation) ...
             const selectedOption = productSelect.options[productSelect.selectedIndex];
             const productName = selectedOption ? selectedOption.text.split(' - ')[0] : '';
             const productId = productIdInput.value;
+            const productType = productTypeInput.value;
             const weight = parseFloat(weightInput.value);
             const price = parseFloat(priceInput.value);
             const subtotal = parseFloat(subtotalInput.value);
+            
+            // Schedule data
+            const scheduledDate = tabContent.querySelector('.scheduled_date').value;
+            const scheduledTime = tabContent.querySelector('.scheduled_time').value;
 
             if (!productId || !productName) {
                 alert('Pilih jasa terlebih dahulu!');
@@ -345,9 +354,24 @@ document.addEventListener('DOMContentLoaded', () => {
                 alert('Berat harus lebih dari 0!');
                 return;
             }
+            
+            if (productType === 'service' && (!scheduledDate || !scheduledTime)) {
+                alert('Jadwal harus diisi untuk layanan service!');
+                return;
+            }
 
-            // Add to items array
-            items.push({ productName, productId, weight, price, subtotal });
+            // Add to items array attached to DOM
+            tabContent.items.push({ 
+                product_name: productName, 
+                product_id: productId, 
+                product_type: productType,
+                weight: weight, 
+                price: price, 
+                subtotal: subtotal,
+                scheduled_date: scheduledDate,
+                scheduled_time: scheduledTime,
+                status: 'ON PROCESS'
+            });
 
             // Re-render table
             renderSummaryTable();
@@ -363,6 +387,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         function renderSummaryTable() {
+            const items = tabContent.items;
             if (items.length === 0) {
                 summaryBody.innerHTML = `
                     <tr class="empty-row">
@@ -378,12 +403,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
             summaryBody.innerHTML = items.map((item, index) => `
                 <tr>
-                    <td style="padding:0.875rem; font-weight:600;">${item.productName}</td>
+                    <td style="padding:0.875rem; font-weight:600;">${item.product_name}</td>
                     <td style="padding:0.875rem;">${item.weight} kg</td>
                     <td style="padding:0.875rem;">Rp ${item.price.toLocaleString('id-ID')}</td>
                     <td style="padding:0.875rem; font-weight:700; color:var(--success);">Rp ${item.subtotal.toLocaleString('id-ID')}</td>
                     <td style="padding:0.875rem;">
-                        <button onclick="removeItem(${index})" class="btn btn-sm" style="height:32px; padding:0 0.75rem; background:var(--danger-pale); color:var(--danger); border:1px solid var(--danger);">
+                        <button onclick="removeItem('${tabContent.dataset.tab}', ${index})" class="btn btn-sm" style="height:32px; padding:0 0.75rem; background:var(--danger-pale); color:var(--danger); border:1px solid var(--danger);">
                             <i class="fas fa-trash"></i>
                         </button>
                     </td>
@@ -393,25 +418,99 @@ document.addEventListener('DOMContentLoaded', () => {
             const total = items.reduce((sum, item) => sum + item.subtotal, 0);
             totalAmount.textContent = `Rp ${total.toLocaleString('id-ID')}`;
         }
-
-        // Make removeItem global for this tab
-        window.removeItem = (index) => {
-            items.splice(index, 1);
-            renderSummaryTable();
-        };
+        
+        // Expose render function for global removeItem to call
+        tabContent.renderSummaryTable = renderSummaryTable;
     }
 
-    // Close dropdowns on outside click
-    document.addEventListener('click', (e) => {
-        if (!e.target.closest('.client-container')) {
-            document.querySelectorAll('.client-dropdown').forEach(d => d.style.display = 'none');
+    // Global removeItem function
+    window.removeItem = (tabId, index) => {
+        const tabContent = document.querySelector(`.tab-content[data-tab="${tabId}"]`);
+        if (tabContent && tabContent.items) {
+            tabContent.items.splice(index, 1);
+            tabContent.renderSummaryTable();
         }
-    });
+    };
 
     // Process All Transactions
-    document.getElementById('btn-proses').addEventListener('click', () => {
-        alert('Proses transaksi - implementasi backend required');
-        // TODO: Collect all tab data and POST to server
+    document.getElementById('btn-proses').addEventListener('click', async () => {
+        const tabs = document.querySelectorAll('.tab-content');
+        let allData = [];
+        let hasError = false;
+
+        tabs.forEach((tab, index) => {
+            const clientName = tab.querySelector('.client-search').value;
+            const clientId = tab.querySelector('.client_id').value;
+            const items = tab.items || [];
+
+            if (!clientName) {
+                Toast.error(`Tab ${index + 1}: Nama pelanggan wajib diisi!`);
+                hasError = true;
+                return;
+            }
+
+            if (items.length === 0) {
+                Toast.error(`Tab ${index + 1}: Belum ada item transaksi!`);
+                hasError = true;
+                return;
+            }
+
+            // Construct payload for this transaction
+            allData.push({
+                client_name: clientName,
+                customer_id: clientId || null,
+                items: items
+            });
+        });
+
+        if (hasError || allData.length === 0) return;
+
+        // Disable button
+        const btnProses = document.getElementById('btn-proses');
+        const originalText = btnProses.innerHTML;
+        btnProses.disabled = true;
+        btnProses.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memproses...';
+
+        try {
+            // Send requests sequentially or parallel. 
+            // Since our backend endpoint creates ONE transaction (ref_no) per request (or per loop in store),
+            // let's check TransactionController@store again.
+            // It accepts "items" array and loops through them creating one transaction row per item.
+            // Wait, the controller structure:
+            // foreach ($validated['items'] as $item) { Transaction::create(...) }
+            // So one request can handle multiple items for ONE client.
+            // But here we have multiple TABS, each tab is a DIFFERENT client (potentially).
+            // So we need to send ONE request PER TAB.
+
+            for (const data of allData) {
+                const response = await fetch('{{ route("transactions.store") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(result.message || 'Gagal menyimpan transaksi');
+                }
+            }
+
+            // Success
+            Toast.success('Semua transaksi berhasil dibuat!');
+            setTimeout(() => {
+                window.location.href = '{{ route("list.page") }}';
+            }, 1000);
+
+        } catch (error) {
+            console.error(error);
+            Toast.error(error.message || 'Terjadi kesalahan saat memproses transaksi.');
+            btnProses.disabled = false;
+            btnProses.innerHTML = originalText;
+        }
     });
 });
 </script>
