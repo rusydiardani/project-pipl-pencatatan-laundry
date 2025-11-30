@@ -68,7 +68,7 @@
                                     Status Laundry
                                 </label>
                                 <select class="input" id="status" name="status" style="width:100%;">
-                                    @foreach(['NEW', 'RECEIVED', 'PROCESS', 'WASHING', 'IRONING', 'READY', 'COMPLETED', 'PICKED_UP', 'CANCELLED'] as $status)
+                                    @foreach(['PROCESS','COMPLETED', 'CANCELLED'] as $status)
                                         <option value="{{ $status }}" {{ $transaction->status == $status ? 'selected' : '' }}>
                                             {{ $status }}
                                         </option>
