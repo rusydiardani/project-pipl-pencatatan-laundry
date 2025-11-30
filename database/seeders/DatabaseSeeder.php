@@ -14,19 +14,19 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::create([
-        //     'name' => 'Admin Utama',
-        //     'username' => 'admin',
-        //     'password' => Hash::make('admin123'),
-        //     'role' => 'admin',
-        // ]);
+        User::create([
+            'name' => 'Admin Utama',
+            'username' => 'admin',
+            'password' => Hash::make('admin123'),
+            'role' => 'admin',
+        ]);
 
-        // User::create([
-        //     'name' => 'Staff Kasir',
-        //     'username' => 'staff',
-        //     'password' => Hash::make('staff123'),
-        //     'role' => 'user',
-        // ]);
+        User::create([
+            'name' => 'Staff Kasir',
+            'username' => 'staff',
+            'password' => Hash::make('staff123'),
+            'role' => 'user',
+        ]);
 
         $this->call([
             CustomerSeeder::class,

@@ -20,7 +20,7 @@
         <div class="dropdown-menu">
           <a href="{{ route('service.index') }}" class="dropdown-item" style="{{ request()->routeIs('service.*') ? 'color:var(--primary); background:var(--gray-50);' : '' }}">Layanan (Service)</a>
           {{-- <a href="{{ route('products.index') }}" class="dropdown-item" style="{{ request()->routeIs('products.*') ? 'color:var(--primary); background:var(--gray-50);' : '' }}">Barang (Stok)</a> --}}
-          <a href="{{ route('customers.index') }}" class="dropdown-item" style="{{ request()->routeIs('customers.*') ? 'color:var(--primary); background:var(--gray-50);' : '' }}">Pelanggan</a>
+          {{-- <a href="{{ route('customers.index') }}" class="dropdown-item" style="{{ request()->routeIs('customers.*') ? 'color:var(--primary); background:var(--gray-50);' : '' }}">Pelanggan</a> --}} 
         </div>
       </div>
     </div>
