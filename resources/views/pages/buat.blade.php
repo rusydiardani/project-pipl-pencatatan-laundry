@@ -21,14 +21,14 @@
     </div>
 
     <!-- Tab Bar -->
-    <div class="card" style="box-shadow:var(--shadow-sm); border-radius:var(--radius-lg) var(--radius-lg) 0 0; border:1px solid var(--border); border-bottom:none; padding:1rem 1.5rem; background:var(--gray-50);">
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-            <div id="tab-container" style="display:flex; gap:0.5rem; flex:1;"></div>
-            <div style="display:flex; gap:0.5rem;">
-                <button class="btn btn-sm btn-success" id="btn-add-tab" style="height:36px; padding:0 1rem;">
+    <div class="card" style="box-shadow:var(--shadow-sm); border-radius:var(--radius-lg) var(--radius-lg) 0 0; border:1px solid var(--border); border-bottom:none; padding:1rem; background:var(--gray-50);">
+        <div style="display:flex; flex-direction:column; gap:1rem;">
+            <div id="tab-container" style="display:flex; gap:0.5rem; overflow-x:auto; padding-bottom:0.5rem; -webkit-overflow-scrolling:touch; width:100%;"></div>
+            <div style="display:flex; gap:0.5rem; justify-content:flex-end;">
+                <button class="btn btn-sm btn-success" id="btn-add-tab" style="height:36px; padding:0 1rem; white-space:nowrap;">
                     <i class="fas fa-plus"></i> Tab Baru
                 </button>
-                <button class="btn btn-sm btn-danger" id="btn-remove-tab" style="height:36px; padding:0 1rem;">
+                <button class="btn btn-sm btn-danger" id="btn-remove-tab" style="height:36px; padding:0 1rem; white-space:nowrap;">
                     <i class="fas fa-times"></i> Hapus Tab
                 </button>
             </div>
