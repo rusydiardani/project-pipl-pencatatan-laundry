@@ -10,5 +10,7 @@
   <main class="container-auth">
     @yield('content')
   </main>
+
+  @include('partials.toast')
 </body>
 </html>
