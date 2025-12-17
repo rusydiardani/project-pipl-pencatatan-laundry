@@ -24,9 +24,9 @@ class TransactionSeeder extends Seeder
         // Create 15 dummy transactions
         for ($i = 0; $i < 15; $i++) {
             $customer = $customers->random();
-            $refNo = 'TRX-' . strtoupper(Str::random(8));
+            $refNo = 'TX-' . strtoupper(Str::random(8));
             $date = $faker->dateTimeBetween('-1 month', 'now');
-            $status = $faker->randomElement(['ON PROCESS', 'COMPLETED', 'CANCELLED']);
+            $status = $faker->randomElement(['PROCESS', 'COMPLETED', 'CANCELLED']);
             $paymentStatus = $faker->randomElement(['PAID', 'UNPAID']);
             
             // Each transaction has 1-3 items

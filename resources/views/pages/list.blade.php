@@ -79,7 +79,7 @@
                             <td style="padding:1rem 1.5rem;">
                                 @php
                                     $statusColor = match($t->status) {
-                                        'ON PROCESS' => 'warning',
+                                        'PROCESS' => 'warning',
                                         'COMPLETED' => 'success',
                                         'CANCELLED' => 'danger',
                                         'NEW' => 'primary',

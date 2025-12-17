@@ -223,7 +223,7 @@
             <tr>
                 <th style="width: 5%">No</th>
                 <th style="width: 40%">Service</th>
-                <th style="width: 18%" class="text-center">Jadwal</th>
+                <th style="width: 18%" class="text-center">Hari/Jam Pengantaran</th>
                 <th style="width: 12%" class="text-center">Berat</th>
                 <th style="width: 12%" class="text-right">Harga</th>
                 <th style="width: 13%" class="text-right">Subtotal</th>

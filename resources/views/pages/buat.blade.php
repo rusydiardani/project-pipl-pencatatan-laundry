@@ -112,13 +112,9 @@
                 </div>
             </div>
             <div class="row schedule-fields" style="display:none;">
-                <div class="col-md-6" style="margin-bottom:1rem;">
-                    <label style="display:block; font-size:13px; font-weight:600; color:var(--gray-700); margin-bottom:0.5rem;">Tanggal Jadwal *</label>
-                    <input type="date" class="input scheduled_date" style="width:100%;">
-                </div>
-                <div class="col-md-6" style="margin-bottom:1rem;">
-                    <label style="display:block; font-size:13px; font-weight:600; color:var(--gray-700); margin-bottom:0.5rem;">Jam Jadwal *</label>
-                    <input type="time" class="input scheduled_time" style="width:100%;">
+                <div class="col-md-12" style="margin-bottom:1rem;">
+                    <label style="display:block; font-size:13px; font-weight:600; color:var(--gray-700); margin-bottom:0.5rem;">Tanggal & Jam Pengantaran *</label>
+                    <input type="datetime-local" class="input scheduled_datetime" style="width:100%;">
                 </div>
             </div>
             <button type="button" class="btn btn-primary btn-add-item" style="width:100%; height:42px; margin-top:0.5rem;">
@@ -341,9 +337,15 @@ document.addEventListener('DOMContentLoaded', () => {
             const price = parseFloat(priceInput.value);
             const subtotal = parseFloat(subtotalInput.value);
             
-            // Schedule data
-            const scheduledDate = tabContent.querySelector('.scheduled_date').value;
-            const scheduledTime = tabContent.querySelector('.scheduled_time').value;
+            // Schedule data - combined datetime field
+            const scheduledDatetime = tabContent.querySelector('.scheduled_datetime').value;
+            let scheduledDate = '';
+            let scheduledTime = '';
+            if (scheduledDatetime) {
+                const dt = new Date(scheduledDatetime);
+                scheduledDate = dt.toISOString().split('T')[0]; // YYYY-MM-DD
+                scheduledTime = dt.toTimeString().slice(0, 5); // HH:MM
+            }
 
             if (!productId || !productName) {
                 alert('Pilih jasa terlebih dahulu!');
@@ -355,8 +357,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
             
-            if (productType === 'service' && (!scheduledDate || !scheduledTime)) {
-                alert('Jadwal harus diisi untuk layanan service!');
+            if (productType === 'service' && !scheduledDatetime) {
+                alert('Tanggal & Jam Pengantaran harus diisi untuk layanan service!');
                 return;
             }
 

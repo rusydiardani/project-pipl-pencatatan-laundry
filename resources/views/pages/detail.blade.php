@@ -101,7 +101,7 @@
                         <tr>
                             <th style="font-size:12px; text-transform:uppercase; letter-spacing:0.5px; padding:0.875rem 1.5rem; color:var(--gray-600); font-weight:600; border-bottom:1px solid var(--border);">No</th>
                             <th style="font-size:12px; text-transform:uppercase; letter-spacing:0.5px; padding:0.875rem 1.5rem; color:var(--gray-600); font-weight:600; border-bottom:1px solid var(--border);">Service</th>
-                            <th style="font-size:12px; text-transform:uppercase; letter-spacing:0.5px; padding:0.875rem 1.5rem; color:var(--gray-600); font-weight:600; border-bottom:1px solid var(--border);">Jadwal</th>
+                            <th style="font-size:12px; text-transform:uppercase; letter-spacing:0.5px; padding:0.875rem 1.5rem; color:var(--gray-600); font-weight:600; border-bottom:1px solid var(--border);">Hari/Jam Pengantaran</th>
                             <th style="font-size:12px; text-transform:uppercase; letter-spacing:0.5px; padding:0.875rem 1.5rem; color:var(--gray-600); font-weight:600; border-bottom:1px solid var(--border);">Berat</th>
                             <th style="font-size:12px; text-transform:uppercase; letter-spacing:0.5px; padding:0.875rem 1.5rem; color:var(--gray-600); font-weight:600; border-bottom:1px solid var(--border);">Harga</th>
                             <th style="font-size:12px; text-transform:uppercase; letter-spacing:0.5px; padding:0.875rem 1.5rem; color:var(--gray-600); font-weight:600; border-bottom:1px solid var(--border);">Subtotal</th>
@@ -333,9 +333,57 @@
         font-weight: bold !important;
     }
 
-    /* Icons in print */
-    .fas, .far, .fa {
-        font-family: 'Font Awesome 6 Free' !important;
+    /* Hide all Font Awesome icons in print */
+    .fas, .far, .fa, .fab, i[class*="fa-"] {
+        display: none !important;
+    }
+
+    /* Info section - make it a simple grid */
+    .info-section, .receipt-card .card-body .row {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 0.5rem 1rem !important;
+    }
+
+    .col-md-3 {
+        margin-bottom: 0.5rem !important;
+    }
+
+    .col-md-3 > div:first-child {
+        font-size: 9pt !important;
+        font-weight: bold !important;
+        text-transform: uppercase !important;
+        margin-bottom: 2px !important;
+    }
+
+    .col-md-3 > div:last-child {
+        font-size: 11pt !important;
+    }
+
+    /* Card headers - compact */
+    .card-header {
+        padding: 0.5rem 1rem !important;
+        font-size: 11pt !important;
+        background: #f0f0f0 !important;
+        border-bottom: 1px solid #000 !important;
+    }
+
+    .card-header > div {
+        gap: 0 !important;
+    }
+
+    .card-header div[style*="width:36px"] {
+        display: none !important;
+    }
+
+    /* Table section title */
+    .card-body {
+        padding: 0.75rem !important;
+    }
+
+    /* Remove row class styling */
+    .row {
+        margin: 0 !important;
     }
 }
 </style>
